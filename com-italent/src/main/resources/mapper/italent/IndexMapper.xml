@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.italent.mapper.IndexMapper">
+    <!-- 人才库总量 -->
+    <select id="countAll" resultType="int">
+        select count(f_id) from tbitalent_resume
+        <where>
+            <if test="fHr != null and fHr != ''">
+                f_hr = #{fHr}
+            </if>
+        </where>
+    </select>
+
+    <!-- 年 / 季度 / 月 / 周 入库人数 -->
+    <select id="countByWrapper" resultType="int">
+        select count(f_id) from tbitalent_resume
+        <where>
+            <if test="fHr != null and fHr != ''">
+               f_hr = #{fHr} and
+            </if>
+            <if test="params != null">
+                <!-- 年 -->
+                <if test="params.by == '1'.toString()">
+                    DATE_FORMAT(f_createtime, '%Y') = DATE_FORMAT(CURDATE(), '%Y')
+                </if>
+                <!-- 季度 -->
+                <if test="params.by == '2'.toString()">
+                    QUARTER(f_createtime) = QUARTER(CURDATE())
+                </if>
+                <!-- 月 -->
+                <if test="params.by == '3'.toString()">
+                    DATE_FORMAT(f_createtime, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+                </if>
+                <!-- 周 -->
+                <if test="params.by == '4'.toString()">
+                    and f_createtime &gt;= date_sub(curdate(), INTERVAL WEEKDAY(curdate()) DAY)
+                    and f_createtime &lt;= date_sub(curdate(), INTERVAL WEEKDAY(curdate()) - 6 DAY)
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!-- 本月面试人数 -->
+    <select id="countInterview" resultType="int">
+        select count(f_id) from tbitalent_resume
+        <where>
+            <if test="fHr != null and fHr != ''">
+                f_hr = #{fHr} and
+            </if>
+            f_progress in (2, 3, 4)
+            and date_format(f_createtime, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+        </where>
+    </select>
+
+    <!-- 本月入职人数 -->
+    <select id="countEntry" resultType="int">
+        select count(f_id) from tbitalent_resume
+        <where>
+            <if test="fHr != null and fHr != ''">
+                f_hr = #{fHr} and
+            </if>
+            f_progress = 5
+            and date_format(f_createtime, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+        </where>
+    </select>
+
+    <!-- 简历入库与面试次数统计(入库量) -->
+    <select id="countResumeByMonth" resultType="map">
+        select
+            sum(case when month(f_createtime) = 1 then 1 else 0 end) '1',
+                sum(case when month(f_createtime) = 2 then 1 else 0 end) '2',
+                sum(case when month(f_createtime) = 3 then 1 else 0 end) '3',
+                sum(case when month(f_createtime) = 4 then 1 else 0 end) '4',
+                sum(case when month(f_createtime) = 5 then 1 else 0 end) '5',
+                sum(case when month(f_createtime) = 6 then 1 else 0 end) '6',
+                sum(case when month(f_createtime) = 7 then 1 else 0 end) '7',
+                sum(case when month(f_createtime) = 8 then 1 else 0 end) '8',
+                sum(case when month(f_createtime) = 9 then 1 else 0 end) '9',
+                sum(case when month(f_createtime) = 10 then 1 else 0 end) '10',
+                sum(case when month(f_createtime) = 11 then 1 else 0 end) '11',
+                sum(case when month(f_createtime) = 12 then 1 else 0 end) '12'
+        from tbitalent_resume
+        <where>
+            <if test="fHr != null and fHr != ''">
+                f_hr = #{fHr}
+            </if>
+            <if test="params.year != null">
+                and date_format(f_createtime, '%Y') = #{params.year}
+            </if>
+        </where>
+    </select>
+
+    <!-- 简历入库与面试次数统计(面试次数) -->
+    <select id="countHrByMonth" parameterType="Long" resultType="map">
+        select
+            sum(case when month(f_createtime) = 1 then 1 else 0 end) '1',
+            sum(case when month(f_createtime) = 2 then 1 else 0 end) '2',
+            sum(case when month(f_createtime) = 3 then 1 else 0 end) '3',
+            sum(case when month(f_createtime) = 4 then 1 else 0 end) '4',
+            sum(case when month(f_createtime) = 5 then 1 else 0 end) '5',
+            sum(case when month(f_createtime) = 6 then 1 else 0 end) '6',
+            sum(case when month(f_createtime) = 7 then 1 else 0 end) '7',
+            sum(case when month(f_createtime) = 8 then 1 else 0 end) '8',
+            sum(case when month(f_createtime) = 9 then 1 else 0 end) '9',
+            sum(case when month(f_createtime) = 10 then 1 else 0 end) '10',
+            sum(case when month(f_createtime) = 11 then 1 else 0 end) '11',
+            sum(case when month(f_createtime) = 12 then 1 else 0 end) '12'
+        from tbitalent_resume
+        <where>
+            f_start in (2) and f_progress in (2, 3, 4, 5)
+            <if test="fHr != null and fHr != ''">
+                and f_hr = #{fHr}
+            </if>
+            <if test="params.year != null">
+                and date_format(f_createtime, '%Y') = #{params.year}
+            </if>
+        </where>
+    </select>
+
+    <!-- 来源统计 -->
+    <select id="countSource" resultType="map">
+        select case when f_source is null or trim(f_source) = '' then '未知' else f_source end source, count(f_id) cnt from tbitalent_resume
+        <where>
+            <if test="fHr != null and fHr != ''">
+                f_hr = #{fHr}
+            </if>
+        </where>
+        group by f_source
+    </select>
+
+    <!-- 职位统计 -->
+    <select id="countJobName" resultType="map">
+        select case when f_jobname is null or trim(f_jobname) = '' then '未知' else f_jobname end jobname, count(f_id) cnt from tbitalent_resume
+        <where>
+            <if test="fHr != null and fHr != ''">
+                f_hr = #{fHr}
+            </if>
+        </where>
+        group by f_jobname
+    </select>
+
+    <!-- 当月入库排行榜 -->
+    <select id="countAllHrByMonth" resultType="map">
+        select f_hr hr, count(f_id) cnt from tbitalent_resume t1
+        <where>
+            <if test="fHr != null and fHr != ''">
+                f_hr = #{fHr} and
+            </if>
+            DATE_FORMAT(f_createtime, '%Y%m') = DATE_FORMAT(CURDATE( ), '%Y%m')
+        </where>
+        group by f_hr order by cnt desc
+    </select>
+</mapper>

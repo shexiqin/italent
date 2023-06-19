@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('职位管理列表')"/>
+    <th:block th:include="include :: layout-latest-css" />
+    <th:block th:include="include :: ztree-css" />
+</head>
+<body class="gray-bg">
+    <div class="ui-layout-west">
+        <div class="box box-main">
+            <div class="box-header">
+                <div class="box-title">
+                    <i class="fa icon-grid"></i> 岗位名称
+                </div>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" id="btnExpand" title="展开" style="display:none;"><i class="fa fa-chevron-up"></i></button>
+                    <button type="button" class="btn btn-box-tool" id="btnCollapse" title="折叠"><i class="fa fa-chevron-down"></i></button>
+                    <button type="button" class="btn btn-box-tool" id="btnRefresh" title="刷新部门"><i class="fa fa-refresh"></i></button>
+                </div>
+            </div>
+            <div class="ui-layout-content">
+                <div id="tree" class="ztree"></div>
+            </div>
+        </div>
+    </div>
+    <div class="ui-layout-center">
+        <div class="container-div">
+            <div class="row">
+                <div class="col-sm-12 search-collapse">
+                    <form id="formId">
+                        <input type="hidden" name="fPostname"/>
+                        <div class="select-list">
+                            <ul>
+                                <!--<li>
+                                    <label>职位名称：</label>
+                                    <input type="text" name="fJobname"/>
+                                </li>
+                                <li>
+                                    <label>岗位名称：</label>
+                                    <input type="text" name="fPostname"/>
+                                </li>-->
+                                <li>
+                                    <label>岗位下架：</label>
+                                    <select name="fDel" th:with="type=${@dict.getType('publish_status')}">
+                                        <option value="">所有</option>
+                                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                                th:value="${dict.dictValue}"></option>
+                                    </select>
+                                </li>
+                                <li>
+                                    <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                            class="fa fa-search"></i>&nbsp;搜索</a>
+                                    <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                            class="fa fa-refresh"></i>&nbsp;重置</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="btn-group-sm" id="toolbar" role="group">
+                    <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="italent:post:add">
+                        <i class="fa fa-plus"></i> 添加
+                    </a>
+                    <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+                       shiro:hasPermission="italent:post:edit">
+                        <i class="fa fa-edit"></i> 修改
+                    </a>
+                    <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+                       shiro:hasPermission="italent:post:remove">
+                        <i class="fa fa-remove"></i> 删除
+                    </a>
+                    <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="italent:post:export">
+                        <i class="fa fa-download"></i> 导出
+                    </a>
+                </div>
+                <div class="col-sm-12 select-table table-striped">
+                    <table id="bootstrap-table"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer"/>
+    <th:block th:include="include :: layout-latest-js" />
+    <th:block th:include="include :: ztree-js" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('italent:post:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('italent:post:remove')}]];
+        var fDelDatas = [[${@dict.getType('publish_status')}]];
+        var prefix = ctx + "italent/post";
+
+        $(function() {
+            /* 树形结构的布局 */
+            var panehHidden = false;
+            if ($(this).width() < 769) {
+                panehHidden = true;
+            }
+            $('body').layout({ initClosed: panehHidden, west__size: 185 });
+            // 回到顶部绑定
+            if ($.fn.toTop !== undefined) {
+                var opt = {
+                    win:$('.ui-layout-center'),
+                    doc:$('.ui-layout-center')
+                };
+                $('#scroll-up').toTop(opt);
+            }
+            /* 树形结构的布局 */
+            // 查询岗位的数据
+            queryPostList();
+            // 查询部门的树
+            queryPostTree();
+        });
+
+        function queryPostList() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "职位管理",
+                columns: [{
+                    checkbox: true
+                },
+                    {
+                        field: 'fId',
+                        title: '主键',
+                        visible: false
+                    },
+                    {
+                        field: 'fJobname',
+                        title: '职位名称'
+                    },
+                    {
+                        field: 'fPostname',
+                        title: '岗位名称'
+                    },
+                    {
+                        field: 'fDel',
+                        title: '岗位下架',
+                        formatter: function (value, row, index) {
+                            return $.table.selectDictLabel(fDelDatas, value);
+                        }
+                    },
+                    {
+                        field: 'fRemark',
+                        title: '备注'
+                    },
+                    {
+                        field: 'fCreatetime',
+                        title: '创建时间'
+                    },
+                    {
+                        field: 'fCreateby',
+                        title: '创建人'
+                    },
+                    {
+                        field: 'fUpdatetime',
+                        title: '更新时间'
+                    },
+                    {
+                        field: 'fUpdateby',
+                        title: '更新人'
+                    },
+                    {
+                        title: '操作',
+                        align: 'center',
+                        formatter: function (value, row, index) {
+                            var actions = [];
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.fId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.fId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                            return actions.join('');
+                        }
+                    }]
+            };
+            $.table.init(options);
+        }
+
+        function queryPostTree() {
+            // 获取树形结构数据的路径
+            var url = prefix + "/treeData";
+            var options = {
+                url: url,
+                expandLevel: 2,
+                onClick : zOnClick
+            };
+            $.tree.init(options);
+
+            /**
+             *
+             * @param event
+             * @param treeId
+             * @param treeNode 点击的当前节点的信息
+             */
+            function zOnClick(event, treeId, treeNode) {
+                // 当前节点的名字
+                var name = treeNode.name;
+
+                var pId = treeNode.pId;
+                if(pId == null){
+                    // 基于属性选择器，选择职位名称的组件，然后赋值
+                    $("input[name='fPostname']").val("");
+                    // 执行表格的检索功能
+                    $.table.search()
+                    return;
+                }
+                // 基于属性选择器，选择职位名称的组件，然后赋值
+                $("input[name='fPostname']").val(name);
+                // 执行表格的检索功能
+                $.table.search()
+            }
+        }
+
+        $('#btnRefresh').click(function() {
+            queryPostTree();
+        });
+    </script>
+</body>
+</html>

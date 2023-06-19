@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.italent.mapper.TbitalentPostMapper">
+    
+    <resultMap type="TbitalentPost" id="TbitalentPostResult">
+        <result property="fId"    column="f_id"    />
+        <result property="fJobname"    column="f_jobname"    />
+        <result property="fPostname"    column="f_postname"    />
+        <result property="fDel"    column="f_del"    />
+        <result property="fRemark"    column="f_remark"    />
+        <result property="fCreatetime"    column="f_createtime"    />
+        <result property="fCreateby"    column="f_createby"    />
+        <result property="fUpdatetime"    column="f_updatetime"    />
+        <result property="fUpdateby"    column="f_updateby"    />
+    </resultMap>
+
+    <sql id="selectTbitalentPostVo">
+        select f_id, f_jobname, f_postname, f_del, f_remark, f_createtime, f_createby, f_updatetime, f_updateby from tbitalent_post
+    </sql>
+
+    <select id="selectTbitalentPostList" parameterType="TbitalentPost" resultMap="TbitalentPostResult">
+        <include refid="selectTbitalentPostVo"/>
+        <where>  
+            <if test="fJobname != null  and fJobname != ''"> and f_jobname like concat('%', #{fJobname}, '%')</if>
+            <if test="fPostname != null  and fPostname != ''"> and f_postname like concat('%', #{fPostname}, '%')</if>
+            <if test="fDel != null  and fDel != ''"> and f_del = #{fDel}</if>
+            <if test="fRemark != null  and fRemark != ''"> and f_remark = #{fRemark}</if>
+            <if test="fCreatetime != null "> and f_createtime = #{fCreatetime}</if>
+            <if test="fCreateby != null  and fCreateby != ''"> and f_createby = #{fCreateby}</if>
+            <if test="fUpdatetime != null "> and f_updatetime = #{fUpdatetime}</if>
+            <if test="fUpdateby != null  and fUpdateby != ''"> and f_updateby = #{fUpdateby}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbitalentPostByFId" parameterType="Long" resultMap="TbitalentPostResult">
+        <include refid="selectTbitalentPostVo"/>
+        where f_id = #{fId}
+    </select>
+    <select id="selectTbitalentPostListWithJob" resultMap="TbitalentPostResult">
+        select f_postname, f_jobname
+        from tbitalent_post
+        group by f_postname, f_jobname
+        order by f_postname, f_jobname
+    </select>
+
+    <insert id="insertTbitalentPost" parameterType="TbitalentPost" useGeneratedKeys="true" keyProperty="fId">
+        insert into tbitalent_post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fJobname != null">f_jobname,</if>
+            <if test="fPostname != null">f_postname,</if>
+            <if test="fDel != null">f_del,</if>
+            <if test="fRemark != null">f_remark,</if>
+            <if test="fCreatetime != null">f_createtime,</if>
+            <if test="fCreateby != null">f_createby,</if>
+            <if test="fUpdatetime != null">f_updatetime,</if>
+            <if test="fUpdateby != null">f_updateby,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fJobname != null">#{fJobname},</if>
+            <if test="fPostname != null">#{fPostname},</if>
+            <if test="fDel != null">#{fDel},</if>
+            <if test="fRemark != null">#{fRemark},</if>
+            <if test="fCreatetime != null">#{fCreatetime},</if>
+            <if test="fCreateby != null">#{fCreateby},</if>
+            <if test="fUpdatetime != null">#{fUpdatetime},</if>
+            <if test="fUpdateby != null">#{fUpdateby},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbitalentPost" parameterType="TbitalentPost">
+        update tbitalent_post
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fJobname != null">f_jobname = #{fJobname},</if>
+            <if test="fPostname != null">f_postname = #{fPostname},</if>
+            <if test="fDel != null">f_del = #{fDel},</if>
+            <if test="fRemark != null">f_remark = #{fRemark},</if>
+            <if test="fCreatetime != null">f_createtime = #{fCreatetime},</if>
+            <if test="fCreateby != null">f_createby = #{fCreateby},</if>
+            <if test="fUpdatetime != null">f_updatetime = #{fUpdatetime},</if>
+            <if test="fUpdateby != null">f_updateby = #{fUpdateby},</if>
+        </trim>
+        where f_id = #{fId}
+    </update>
+
+    <delete id="deleteTbitalentPostByFId" parameterType="Long">
+        delete from tbitalent_post where f_id = #{fId}
+    </delete>
+
+    <delete id="deleteTbitalentPostByFIds" parameterType="String">
+        delete from tbitalent_post where f_id in 
+        <foreach item="fId" collection="array" open="(" separator="," close=")">
+            #{fId}
+        </foreach>
+    </delete>
+
+</mapper>

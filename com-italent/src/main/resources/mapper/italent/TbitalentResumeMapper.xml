@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.italent.mapper.TbitalentResumeMapper">
+
+    <resultMap type="TbitalentResume" id="TbitalentResumeResult">
+        <result property="fId" column="f_id"/>
+        <result property="fName" column="f_name"/>
+        <result property="fSex" column="f_sex"/>
+        <result property="fIdcard" column="f_idcard"/>
+        <result property="fBirthday" column="f_birthday"/>
+        <result property="fAge" column="f_age"/>
+        <result property="fTel" column="f_tel"/>
+        <result property="fHopeSalary" column="f_hope_salary"/>
+        <result property="fEntryDate" column="f_entry_date"/>
+        <result property="fNation" column="f_nation"/>
+        <result property="fMarry" column="f_marry"/>
+        <result property="fHobby" column="f_hobby"/>
+        <result property="fMail" column="f_mail"/>
+        <result property="fPoliticalStatus" column="f_political_status"/>
+        <result property="fResidenceAddress" column="f_residence_address"/>
+        <result property="fNowAddress" column="f_now_address"/>
+        <result property="fJobname" column="f_jobname"/>
+        <result property="fJobyear" column="f_jobyear"/>
+        <result property="fExp" column="f_exp"/>
+        <result property="fRegion" column="f_region"/>
+        <result property="fCompany" column="f_company"/>
+        <result property="fJobexp" column="f_jobexp"/>
+        <result property="fPrjexp" column="f_prjexp"/>
+        <result property="fTech" column="f_tech"/>
+        <result property="fEduexp" column="f_eduexp"/>
+        <result property="fEducationalBackground" column="f_educational_background"/>
+        <result property="fEnrollType" column="f_enroll_type"/>
+        <result property="fFlag" column="f_actions"/>
+        <result property="fTxt" column="f_txt"/>
+        <result property="fLocation" column="f_location"/>
+        <result property="fAppraise" column="f_appraise"/>
+        <result property="fSalary" column="f_salary"/>
+        <result property="fOrthersalary" column="f_orthersalary"/>
+        <result property="fPerformance" column="f_performance"/>
+        <result property="fMonthsalary" column="f_monthsalary"/>
+        <result property="fDegree" column="f_degree"/>
+        <result property="fHr" column="f_hr"/>
+        <result property="fDep" column="f_dep"/>
+        <result property="fSource" column="f_source"/>
+        <result property="fStart" column="f_start"/>
+        <result property="fProgress" column="f_progress"/>
+        <result property="fRegister" column="f_register"/>
+        <result property="fRemark" column="f_remark"/>
+        <result property="fCreateby" column="f_createby"/>
+        <result property="fCreatetime" column="f_createtime"/>
+        <result property="fUpdateby" column="f_updateby"/>
+        <result property="fUpdatetime" column="f_updatetime"/>
+    </resultMap>
+
+    <sql id="selectTbitalentResumeVo">
+        select f_id,
+               f_name,
+               f_sex,
+               f_idcard,
+               f_action actions ,
+               f_edutime edutimes,
+               f_birthday,
+               f_age,
+               f_tel,
+               f_hope_salary,
+               f_entry_date,
+               f_nation,
+               f_marry,
+               f_hobby,
+               f_mail,
+               f_political_status,
+               f_residence_address,
+               f_now_address,
+               f_jobname,
+               f_jobyear,
+               f_exp,
+               f_region,
+               f_company,
+               f_jobexp,
+               f_prjexp,
+               f_tech,
+               f_eduexp,
+               f_educational_background,
+               f_enroll_type,
+               /*f_flag,*/
+               f_txt,
+               f_location,
+               f_appraise,
+               f_salary,
+               f_orthersalary,
+               f_performance,
+               f_monthsalary,
+               f_degree,
+               f_hr,
+               f_dep,
+               f_source,
+               f_start,
+               f_progress,
+               f_register,
+               f_remark,
+               f_createby,
+               f_createtime,
+               f_updateby,
+               f_updatetime
+        from tbitalent_resume
+    </sql>
+
+    <select id="selectTbitalentResumeList" parameterType="TbitalentResume" resultMap="TbitalentResumeResult">
+        <include refid="selectTbitalentResumeVo"/>
+        <where>
+            <if test="fName != null  and fName != ''">and f_name like concat('%', #{fName}, '%')</if>
+            <if test="fSex != null  and fSex != ''">and f_sex = #{fSex}</if>
+            <if test="fIdcard != null  and fIdcard != ''">and f_idcard = #{fIdcard}</if>
+            <if test="params.beginFBirthday != null and params.beginFBirthday != '' and params.endFBirthday != null and params.endFBirthday != ''">
+                and f_birthday between #{params.beginFBirthday} and #{params.endFBirthday}
+            </if>
+            <if test="fAge != null ">and f_age = #{fAge}</if>
+            <if test="fTel != null  and fTel != ''">and f_tel = #{fTel}</if>
+            <if test="fJobname != null  and fJobname != ''">and f_jobname like concat('%', #{fJobname}, '%')</if>
+            <!-- 工作年限 -->
+            <if test="params.JobyearDic != null">
+                <if test="params.JobyearDic == '1'.toString()">
+                    and f_jobyear between 0 and 3
+                </if>
+                <if test="params.JobyearDic == '2'.toString()">
+                    and f_jobyear between 3 and 5
+                </if>
+                <if test="params.JobyearDic == '3'.toString()">
+                    and f_jobyear between 5 and 10
+                </if>
+                <if test="params.JobyearDic == '4'.toString()">
+                    and f_jobyear &gt;= 10
+                </if>
+                <if test="params.JobyearDic == '5'.toString()">
+                    <if test="params.beginFJobyear != null and params.beginFJobyear != '' and params.endFJobyear != null and params.endFJobyear != ''">
+                        and f_jobyear between #{params.beginFJobyear} and #{params.endFJobyear}
+                    </if>
+                </if>
+            </if>
+            <if test="params.beginFExp != null and params.beginFExp != '' and params.endFExp != null and params.endFExp != ''">
+                and f_exp between #{params.beginFExp} and #{params.endFExp}
+            </if>
+            <if test="fRegion != null  and fRegion != ''">and f_region like concat('%', #{fRegion}, '%')</if>
+            <if test="fCompany != null  and fCompany != ''">and f_company like concat('%', #{fCompany}, '%')</if>
+            <if test="fTech != null  and fTech != ''">and f_tech like concat('%', #{fTech}, '%')</if>
+            <if test="fJobexp != null  and fJobexp != ''">and f_jobexp = #{fJobexp}</if>
+            <if test="fPrjexp != null  and fPrjexp != ''">and f_prjexp = #{fPrjexp}</if>
+            <if test="fEduexp != null  and fEduexp != ''">and f_eduexp = #{fEduexp}</if>
+            <if test="fLocation != null  and fLocation != ''">and f_location = #{fLocation}</if>
+            <if test="fAppraise != null  and fAppraise != ''">and f_appraise = #{fAppraise}</if>
+            <if test="fSalary != null ">and f_salary = #{fSalary}</if>
+            <if test="fOrthersalary != null ">and f_orthersalary = #{fOrthersalary}</if>
+            <if test="fPerformance != null ">and f_performance = #{fPerformance}</if>
+            <if test="fMonthsalary != null ">and f_monthsalary = #{fMonthsalary}</if>
+            <if test="fDegree != null  and fDegree != ''">and f_degree = #{fDegree}</if>
+            <if test="fHr != null  and fHr != ''">and f_hr like concat('%', #{fHr}, '%')</if>
+            <if test="fDep != null  and fDep != ''">and f_dep = #{fDep}</if>
+            <if test="fSource != null  and fSource != ''">and f_source = #{fSource}</if>
+            <if test="fStart != null  and fStart != ''">and f_start = #{fStart}</if>
+            <if test="fProgress != null  and fProgress != ''">and f_progress = #{fProgress}</if>
+            <if test="fFlag != null  and fFlag != ''">and f_flag = #{fFlag}</if>
+            <!--<if test="fTxt != null  and fTxt != ''"> and f_txt like concat('%', #{fTxt}, '%')</if>-->
+            <if test="fRemark != null  and fRemark != ''">and f_remark = #{fRemark}</if>
+            <if test="fCreatetime != null ">and f_createtime = #{fCreatetime}</if>
+            <if test="fEducationalBackground != null  and fEducationalBackground != ''">and f_educational_background =
+                #{fEducationalBackground}
+            </if>
+            <if test="fEnrollType != null  and fEnrollType != ''">and f_enroll_type = #{fEnrollType}</if>
+
+            <!-- 回收池 -->
+            <if test="params.status != null and params.status != '' and params.status == 'recycle'.toString()">and
+                f_start in (4, 5, 6, 7)
+            </if>
+            <!-- 待安排 -->
+            <if test="params.status != null and params.status != '' and params.status == 'unfix'.toString()">and f_start
+                in (2) and f_Progress in (1)
+            </if>
+            <!-- 已安排 -->
+            <if test="params.status != null and params.status != '' and params.status == 'fix'.toString()">and f_start
+                in (2) and f_Progress in (2, 3, 4)
+            </if>
+            <!-- 精英坊 -->
+            <if test="params.status != null and params.status != '' and params.status == 'hero'.toString()">and f_start
+                in (2) and f_Progress in (5)
+            </if>
+            <!-- 精英坊 -->
+            <if test="params.searchKeys != null">
+                and
+                <foreach collection="params.searchKeys" item="key" open="(" close=")" separator="and">
+                    f_txt like concat('%', #{key}, '%')
+                </foreach>
+            </if>
+        </where>
+        order by f_createtime desc, f_name
+    </select>
+
+    <select id="selectTbitalentResumeByFId" parameterType="Long" resultMap="TbitalentResumeResult">
+        <include refid="selectTbitalentResumeVo"/>
+        where f_id = #{fId}
+    </select>
+
+    <select id="Tj" resultType="com.soft.italent.domain.Tongji">
+
+        select t0.f_jobname name, man, woman
+        from (select f_jobname, count(f_sex) man
+              from tbitalent_resume
+              where f_sex = 0
+              group by f_jobname) t0
+                 left join (select f_jobname, count(f_sex) woman
+                            from tbitalent_resume
+                            where f_sex = 1
+                            group by f_jobname) t1 on t0.f_jobname = t1.f_jobname;
+
+    </select>
+    <select id="Tj22" resultType="com.soft.italent.domain.Tongji">
+        select f_educational_background name, count(1) num
+        from tbitalent_resume
+        where f_educational_background = '学信网'
+        group by f_educational_background
+
+    </select>
+    <select id="Tj21" resultType="com.soft.italent.domain.Tongji">
+        select f_educational_background name, count(1) num
+        from tbitalent_resume
+        where f_educational_background = '民教网'
+        group by f_educational_background
+
+    </select>
+    <select id="edutime" resultType="com.soft.italent.domain.Edutime">
+        select  f_resume_id nos,f_end_time times  from tbitalent_edu_history
+    </select>
+
+    <insert id="insertTbitalentResume" parameterType="TbitalentResume" useGeneratedKeys="true" keyProperty="fId">
+        insert into tbitalent_resume
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fName != null and fName != ''">f_name,</if>
+            <if test="fSex != null">f_sex,</if>
+            <if test="fIdcard != null">f_idcard,</if>
+            <if test="fBirthday != null">f_birthday,</if>
+            <if test="fAge != null">f_age,</if>
+            <if test="fTel != null and fTel != ''">f_tel,</if>
+            <if test="fHopeSalary != null">f_hope_salary,</if>
+            <if test="fEntryDate != null">f_entry_date,</if>
+            <if test="fNation != null">f_nation,</if>
+            <if test="fMarry != null">f_marry,</if>
+            <if test="fHobby != null">f_hobby,</if>
+            <if test="fMail != null">f_mail,</if>
+            <if test="fPoliticalStatus != null">f_political_status,</if>
+            <if test="fResidenceAddress != null">f_residence_address,</if>
+            <if test="fNowAddress != null">f_now_address,</if>
+            <if test="fJobname != null and fJobname != ''">f_jobname,</if>
+            <if test="fJobyear != null">f_jobyear,</if>
+            <if test="fExp != null">f_exp,</if>
+            <if test="fRegion != null">f_region,</if>
+            <if test="fCompany != null">f_company,</if>
+            <if test="fJobexp != null">f_jobexp,</if>
+            <if test="fPrjexp != null">f_prjexp,</if>
+            <if test="fTech != null">f_tech,</if>
+            <if test="fEduexp != null">f_eduexp,</if>
+            <if test="fEducationalBackground != null">f_educational_background,</if>
+            <if test="fEnrollType != null">f_enroll_type,</if>
+            <if test="fFlag != null">f_flag,</if>
+            <if test="fTxt != null">f_txt,</if>
+            <if test="fLocation != null">f_location,</if>
+            <if test="fAppraise != null">f_appraise,</if>
+            <if test="fSalary != null">f_salary,</if>
+            <if test="fOrthersalary != null">f_orthersalary,</if>
+            <if test="fPerformance != null">f_performance,</if>
+            <if test="fMonthsalary != null">f_monthsalary,</if>
+            <if test="fDegree != null">f_degree,</if>
+            <if test="fHr != null">f_hr,</if>
+            <if test="fDep != null">f_dep,</if>
+            <if test="fSource != null">f_source,</if>
+            <if test="fStart != null">f_start,</if>
+            <if test="fProgress != null">f_progress,</if>
+            <if test="fRegister != null">f_register,</if>
+            <if test="fRemark != null">f_remark,</if>
+            <if test="fCreateby != null">f_createby,</if>
+            <if test="fCreatetime != null">f_createtime,</if>
+            <if test="fUpdateby != null">f_updateby,</if>
+            <if test="fUpdatetime != null">f_updatetime,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fName != null and fName != ''">#{fName},</if>
+            <if test="fSex != null">#{fSex},</if>
+            <if test="fIdcard != null">#{fIdcard},</if>
+            <if test="fBirthday != null">#{fBirthday},</if>
+            <if test="fAge != null">#{fAge},</if>
+            <if test="fTel != null and fTel != ''">#{fTel},</if>
+            <if test="fHopeSalary != null">#{fHopeSalary},</if>
+            <if test="fEntryDate != null">#{fEntryDate},</if>
+            <if test="fNation != null">#{fNation},</if>
+            <if test="fMarry != null">#{fMarry},</if>
+            <if test="fHobby != null">#{fHobby},</if>
+            <if test="fMail != null">#{fMail},</if>
+            <if test="fPoliticalStatus != null">#{fPoliticalStatus},</if>
+            <if test="fResidenceAddress != null">#{fResidenceAddress},</if>
+            <if test="fNowAddress != null">#{fNowAddress},</if>
+            <if test="fJobname != null and fJobname != ''">#{fJobname},</if>
+            <if test="fJobyear != null">#{fJobyear},</if>
+            <if test="fExp != null">#{fExp},</if>
+            <if test="fRegion != null">#{fRegion},</if>
+            <if test="fCompany != null">#{fCompany},</if>
+            <if test="fJobexp != null">#{fJobexp},</if>
+            <if test="fPrjexp != null">#{fPrjexp},</if>
+            <if test="fTech != null">#{fTech},</if>
+            <if test="fEduexp != null">#{fEduexp},</if>
+            <if test="fEducationalBackground != null">#{fEducationalBackground},</if>
+            <if test="fEnrollType != null">#{fEnrollType},</if>
+            <if test="fFlag != null">#{fFlag},</if>
+            <if test="fTxt != null">#{fTxt},</if>
+            <if test="fLocation != null">#{fLocation},</if>
+            <if test="fAppraise != null">#{fAppraise},</if>
+            <if test="fSalary != null">#{fSalary},</if>
+            <if test="fOrthersalary != null">#{fOrthersalary},</if>
+            <if test="fPerformance != null">#{fPerformance},</if>
+            <if test="fMonthsalary != null">#{fMonthsalary},</if>
+            <if test="fDegree != null">#{fDegree},</if>
+            <if test="fHr != null">#{fHr},</if>
+            <if test="fDep != null">#{fDep},</if>
+            <if test="fSource != null">#{fSource},</if>
+            <if test="fStart != null">#{fStart},</if>
+            <if test="fProgress != null">#{fProgress},</if>
+            <if test="fRegister != null">#{fRegister},</if>
+            <if test="fRemark != null">#{fRemark},</if>
+            <if test="fCreateby != null">#{fCreateby},</if>
+            <if test="fCreatetime != null">#{fCreatetime},</if>
+            <if test="fUpdateby != null">#{fUpdateby},</if>
+            <if test="fUpdatetime != null">#{fUpdatetime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTbitalentResume" parameterType="TbitalentResume">
+        update tbitalent_resume
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fName != null and fName != ''">f_name = #{fName},</if>
+            <if test="fSex != null">f_sex = #{fSex},</if>
+            <if test="fIdcard != null">f_idcard = #{fIdcard},</if>
+            <if test="fBirthday != null">f_birthday = #{fBirthday},</if>
+            <if test="fAge != null">f_age = #{fAge},</if>
+            <if test="fTel != null and fTel != ''">f_tel = #{fTel},</if>
+            <if test="fHopeSalary != null">f_hope_salary = #{fHopeSalary},</if>
+            <if test="fEntryDate != null">f_entry_date = #{fEntryDate},</if>
+            <if test="fNation != null">f_nation = #{fNation},</if>
+            <if test="fMarry != null">f_marry = #{fMarry},</if>
+            <if test="fHobby != null">f_hobby = #{fHobby},</if>
+            <if test="fMail != null">f_mail = #{fMail},</if>
+            <if test="fPoliticalStatus != null">f_political_status = #{fPoliticalStatus},</if>
+            <if test="fResidenceAddress != null">f_residence_address = #{fResidenceAddress},</if>
+            <if test="fNowAddress != null">f_now_address = #{fNowAddress},</if>
+            <if test="fJobname != null and fJobname != ''">f_jobname = #{fJobname},</if>
+            <if test="fJobyear != null">f_jobyear = #{fJobyear},</if>
+            <if test="fExp != null">f_exp = #{fExp},</if>
+            <if test="fRegion != null">f_region = #{fRegion},</if>
+            <if test="fCompany != null">f_company = #{fCompany},</if>
+            <if test="fJobexp != null">f_jobexp = #{fJobexp},</if>
+            <if test="fPrjexp != null">f_prjexp = #{fPrjexp},</if>
+            <if test="fTech != null">f_tech = #{fTech},</if>
+            <if test="fEduexp != null">f_eduexp = #{fEduexp},</if>
+            <if test="fEducationalBackground != null">f_educational_background = #{fEducationalBackground},</if>
+            <if test="fEnrollType != null">f_enroll_type = #{fEnrollType},</if>
+            <if test="fFlag != null">f_flag = #{fFlag},</if>
+            <if test="fTxt != null">f_txt = #{fTxt},</if>
+            <if test="fLocation != null">f_location = #{fLocation},</if>
+            <if test="fAppraise != null">f_appraise = #{fAppraise},</if>
+            <if test="fSalary != null">f_salary = #{fSalary},</if>
+            <if test="fOrthersalary != null">f_orthersalary = #{fOrthersalary},</if>
+            <if test="fPerformance != null">f_performance = #{fPerformance},</if>
+            <if test="fMonthsalary != null">f_monthsalary = #{fMonthsalary},</if>
+            <if test="fDegree != null">f_degree = #{fDegree},</if>
+            <if test="fHr != null">f_hr = #{fHr},</if>
+            <if test="fDep != null">f_dep = #{fDep},</if>
+            <if test="fSource != null">f_source = #{fSource},</if>
+            <if test="fStart != null">f_start = #{fStart},</if>
+            <if test="fProgress != null">f_progress = #{fProgress},</if>
+            <if test="fRegister != null">f_register = #{fRegister},</if>
+            <if test="fRemark != null">f_remark = #{fRemark},</if>
+            <if test="fCreateby != null">f_createby = #{fCreateby},</if>
+            <if test="fCreatetime != null">f_createtime = #{fCreatetime},</if>
+            <if test="fUpdateby != null">f_updateby = #{fUpdateby},</if>
+            <if test="fUpdatetime != null">f_updatetime = #{fUpdatetime},</if>
+        </trim>
+        where f_id = #{fId}
+    </update>
+    <delete id="deleteTbitalentResumeByFId" parameterType="Long">
+        delete
+        from tbitalent_resume
+        where f_id = #{fId}
+    </delete>
+
+    <delete id="deleteTbitalentResumeByFIds" parameterType="String">
+        delete from tbitalent_resume where f_id in
+        <foreach item="fId" collection="array" open="(" separator="," close=")">
+            #{fId}
+        </foreach>
+    </delete>
+
+
+
+
+    <update id="jobname1">
+
+        update tbitalent_resume
+        set f_jobname='实施工程师'
+        where f_jobname like '%实施%'
+          and binary f_jobname != '实施工程师'
+
+    </update>
+
+    <update id="jobname2">
+        update tbitalent_resume
+        set f_jobname='PRA开发工程师'
+        where f_jobname like '%pra%'
+          and binary f_jobname != 'RPA开发工程师'
+    </update>
+
+    <update id="jobname3">
+        update tbitalent_resume
+        set f_jobname='售前工程师'
+        where f_jobname like '%售%'
+          and binary f_jobname != '售前工程师'
+
+    </update>
+    <update id="jobname4">
+        update tbitalent_resume
+        set f_jobname='产品经理'
+        where f_jobname like '%经理%'
+          and binary f_jobname != '产品经理'
+
+    </update>
+    <update id="jobname5">
+        update tbitalent_resume
+        set f_jobname='BI开发'
+        where f_jobname like '%bi%'
+          and binary f_jobname != 'BI开发'
+
+    </update>
+    <update id="jobname6">
+        update tbitalent_resume
+        set f_jobname='PHP开发工程师'
+        where f_jobname like '%PHP%'
+          and binary f_jobname != 'PHP开发工程师'
+
+    </update>
+    <update id="jobname7">
+
+        update tbitalent_resume
+        set f_jobname='IOS开发工程师'
+        where f_jobname like '%IOS%'
+          and binary f_jobname != 'IOS开发工程师'
+
+    </update>
+    <update id="jobname8">
+        update tbitalent_resume
+        set f_jobname='Andriod开发工程师'
+        where f_jobname like '%Andriod%'
+          and binary f_jobname != 'Andriod开发工程师'
+
+    </update>
+    <update id="jobname9">
+        update tbitalent_resume
+        set f_jobname='WEB开发工程师'
+        where f_jobname like '%前端%'
+          and binary f_jobname != 'WEB开发工程师'
+
+
+    </update>
+    <update id="jobname10">
+        update tbitalent_resume
+        set f_jobname='JAVA开发工程师'
+        where f_jobname like '%JAVA%'
+          and binary f_jobname != 'JAVA开发工程师'
+    </update>
+
+    <update id="upedu">
+        update tbitalent_resume
+        set f_eduexp='其他'
+        where f_eduexp not in ('大专', '本科', '硕士', '博士', '其他')
+    </update>
+
+    <update id="upeaction1">
+        update tbitalent_resume
+        set f_action='大数据'
+        where f_company = '阿里巴巴' and f_action !='大数据'
+    </update>
+
+    <update id="upeaction2">
+        update tbitalent_resume
+        set f_action='政务'
+        where f_company = '警察学院' and f_action !='政务'
+
+    </update>
+    <update id="upeaction3">
+        update tbitalent_resume
+        set f_action='工业'
+        where f_company = '河南建筑' and f_action !='工业'
+
+    </update>
+    <update id="upeaction4">
+        update tbitalent_resume
+        set f_action='大数据'
+        where f_company = '百度' and f_action !='大数据'
+
+    </update>
+    <update id="upeaction5">
+        update tbitalent_resume
+        set f_action='产业园'
+        where f_company = '汇源' and f_action !='产业园'
+    </update>
+    <update id="upeaction6">
+        update tbitalent_resume
+        set f_action='连锁商超'
+        where f_company = '胖东来' and f_action !='连锁商超'
+
+    </update>
+    <update id="upeaction7">
+        update tbitalent_resume
+        set f_action='医疗'
+        where f_company = '东方医院' and f_action !='医疗'
+
+    </update>
+    <update id="upeaction8">
+        update tbitalent_resume
+        set f_action='环保'
+        where f_company = '长江环保公司' and f_action !='环保'
+
+    </update>
+    <update id="upeaction9">
+        update tbitalent_resume
+        set f_action='其他'
+        where f_company = '网易' and f_action !='其他'
+
+    </update>
+    <update id="upeaction0">
+        update tbitalent_resume
+        set f_action='互联网电商'
+        where f_company = '淘宝' and f_action !='互联网电商'
+
+    </update>
+
+    <update id="upjobtime">
+        UPDATE tbitalent_resume
+        SET f_jobyear = CONCAT(ceil(DATEDIFF(CURDATE(), f_edutime)/ 365), '年') where 1=1
+    </update>
+    <update id="uptxt1">
+        update tbitalent_resume set f_company='阿里巴巴' where  f_txt like '%阿里巴巴%' and f_company!='阿里巴巴';
+    </update>
+    <update id="uptxt2">
+        update tbitalent_resume set f_company='警察学院' where  f_txt like '%警察学院%' and f_company!='警察学院';    </update>
+    <update id="uptxt3">
+        update tbitalent_resume set f_company='河南建筑' where  f_txt like '%河南建筑%' and f_company!='河南建筑';
+    </update>
+    <update id="uptxt4">
+        update tbitalent_resume set f_company='百度' where  f_txt like '%百度%' and f_company!='百度';
+    </update>
+    <update id="uptxt5">
+        update tbitalent_resume set f_company='汇源' where  f_txt like '%汇源%' and f_company!='汇源';
+    </update>
+    <update id="uptxt6">
+        update tbitalent_resume set f_company='胖东来' where  f_txt like '%胖东来%' and f_company!='胖东来';
+    </update>
+    <update id="uptxt7">
+        update tbitalent_resume set f_company='东方医院' where  f_txt like '%东方医院%' and f_company!='东方医院';
+    </update>
+    <update id="uptxt8">
+        update tbitalent_resume set f_company='长江环保' where  f_txt like '%长江环保%' and f_company!='长江环保';
+    </update>
+    <update id="uptxt9">
+        update tbitalent_resume set f_company='网易' where  f_txt like '%网易%' and f_company!='网易';
+    </update>
+    <update id="uptxt0">
+        update tbitalent_resume set f_company='淘宝' where  f_txt like '%淘宝%' and f_company!='淘宝';    </update>
+    <update id="upedutime">
+        update tbitalent_resume set   f_edutime=#{times} where f_id=#{nos}
+    </update>
+
+
+</mapper>

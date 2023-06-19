@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.italent.mapper.TbitalentDrillHistoryMapper">
+    
+    <resultMap type="TbitalentDrillHistory" id="TbitalentDrillHistoryResult">
+        <result property="fId"    column="f_id"    />
+        <result property="fResumeId"    column="f_resume_id"    />
+        <result property="fStartTime"    column="f_start_time"    />
+        <result property="fEndTime"    column="f_end_time"    />
+        <result property="fCompany"    column="f_company"    />
+        <result property="fContent"    column="f_content"    />
+        <result property="fCertificate"    column="f_certificate"    />
+        <result property="fRemark"    column="f_remark"    />
+    </resultMap>
+
+    <sql id="selectTbitalentDrillHistoryVo">
+        select f_id, f_resume_id, f_start_time, f_end_time, f_company, f_content, f_certificate, f_remark from tbitalent_drill_history
+    </sql>
+
+    <select id="selectTbitalentDrillHistoryList" parameterType="TbitalentDrillHistory" resultMap="TbitalentDrillHistoryResult">
+        <include refid="selectTbitalentDrillHistoryVo"/>
+        <where>  
+            <if test="fResumeId != null  and fResumeId != ''"> and f_resume_id = #{fResumeId}</if>
+            <if test="fStartTime != null  and fStartTime != ''"> and f_start_time = #{fStartTime}</if>
+            <if test="fEndTime != null  and fEndTime != ''"> and f_end_time = #{fEndTime}</if>
+            <if test="fCompany != null  and fCompany != ''"> and f_company = #{fCompany}</if>
+            <if test="fContent != null  and fContent != ''"> and f_content = #{fContent}</if>
+            <if test="fCertificate != null  and fCertificate != ''"> and f_certificate = #{fCertificate}</if>
+            <if test="fRemark != null  and fRemark != ''"> and f_remark = #{fRemark}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbitalentDrillHistoryByFId" parameterType="Long" resultMap="TbitalentDrillHistoryResult">
+        <include refid="selectTbitalentDrillHistoryVo"/>
+        where f_id = #{fId}
+    </select>
+        
+    <insert id="insertTbitalentDrillHistory" parameterType="TbitalentDrillHistory" useGeneratedKeys="true" keyProperty="fId">
+        insert into tbitalent_drill_history
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fResumeId != null and fResumeId != ''">f_resume_id,</if>
+            <if test="fStartTime != null and fStartTime != ''">f_start_time,</if>
+            <if test="fEndTime != null and fEndTime != ''">f_end_time,</if>
+            <if test="fCompany != null and fCompany != ''">f_company,</if>
+            <if test="fContent != null and fContent != ''">f_content,</if>
+            <if test="fCertificate != null and fCertificate != ''">f_certificate,</if>
+            <if test="fRemark != null and fRemark != ''">f_remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fResumeId != null and fResumeId != ''">#{fResumeId},</if>
+            <if test="fStartTime != null and fStartTime != ''">#{fStartTime},</if>
+            <if test="fEndTime != null and fEndTime != ''">#{fEndTime},</if>
+            <if test="fCompany != null and fCompany != ''">#{fCompany},</if>
+            <if test="fContent != null and fContent != ''">#{fContent},</if>
+            <if test="fCertificate != null and fCertificate != ''">#{fCertificate},</if>
+            <if test="fRemark != null and fRemark != ''">#{fRemark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbitalentDrillHistory" parameterType="TbitalentDrillHistory">
+        update tbitalent_drill_history
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fResumeId != null and fResumeId != ''">f_resume_id = #{fResumeId},</if>
+            <if test="fStartTime != null and fStartTime != ''">f_start_time = #{fStartTime},</if>
+            <if test="fEndTime != null and fEndTime != ''">f_end_time = #{fEndTime},</if>
+            <if test="fCompany != null and fCompany != ''">f_company = #{fCompany},</if>
+            <if test="fContent != null and fContent != ''">f_content = #{fContent},</if>
+            <if test="fCertificate != null and fCertificate != ''">f_certificate = #{fCertificate},</if>
+            <if test="fRemark != null and fRemark != ''">f_remark = #{fRemark},</if>
+        </trim>
+        where f_id = #{fId}
+    </update>
+
+    <delete id="deleteTbitalentDrillHistoryByFId" parameterType="Long">
+        delete from tbitalent_drill_history where f_id = #{fId}
+    </delete>
+
+    <delete id="deleteTbitalentDrillHistoryByFIds" parameterType="String">
+        delete from tbitalent_drill_history where f_id in 
+        <foreach item="fId" collection="array" open="(" separator="," close=")">
+            #{fId}
+        </foreach>
+    </delete>
+    <delete id="deleteTbitalentDrillHistoryByResumeId">
+        delete from tbitalent_drill_history where f_resume_id = #{fResumeId}
+    </delete>
+
+</mapper>

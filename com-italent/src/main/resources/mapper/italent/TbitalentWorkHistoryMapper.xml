@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.italent.mapper.TbitalentWorkHistoryMapper">
+    
+    <resultMap type="TbitalentWorkHistory" id="TbitalentWorkHistoryResult">
+        <result property="fId"    column="f_id"    />
+        <result property="fResumeId"    column="f_resume_id"    />
+        <result property="fStartTime"    column="f_start_time"    />
+        <result property="fEndTime"    column="f_end_time"    />
+        <result property="fCompany"    column="f_company"    />
+        <result property="fPost"    column="f_post"    />
+        <result property="fSalary"    column="f_salary"    />
+        <result property="fLeave"    column="f_leave"    />
+        <result property="fTel"    column="f_tel"    />
+        <result property="fWitness"    column="f_witness"    />
+    </resultMap>
+
+    <sql id="selectTbitalentWorkHistoryVo">
+        select f_id, f_resume_id, f_start_time, f_end_time, f_company, f_post, f_salary, f_leave, f_tel, f_witness from tbitalent_work_history
+    </sql>
+
+    <select id="selectTbitalentWorkHistoryList" parameterType="TbitalentWorkHistory" resultMap="TbitalentWorkHistoryResult">
+        <include refid="selectTbitalentWorkHistoryVo"/>
+        <where>  
+            <if test="fResumeId != null  and fResumeId != ''"> and f_resume_id = #{fResumeId}</if>
+            <if test="fStartTime != null  and fStartTime != ''"> and f_start_time = #{fStartTime}</if>
+            <if test="fEndTime != null  and fEndTime != ''"> and f_end_time = #{fEndTime}</if>
+            <if test="fCompany != null  and fCompany != ''"> and f_company = #{fCompany}</if>
+            <if test="fPost != null  and fPost != ''"> and f_post = #{fPost}</if>
+            <if test="fSalary != null  and fSalary != ''"> and f_salary = #{fSalary}</if>
+            <if test="fLeave != null  and fLeave != ''"> and f_leave = #{fLeave}</if>
+            <if test="fTel != null  and fTel != ''"> and f_tel = #{fTel}</if>
+            <if test="fWitness != null  and fWitness != ''"> and f_witness = #{fWitness}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbitalentWorkHistoryByFId" parameterType="Long" resultMap="TbitalentWorkHistoryResult">
+        <include refid="selectTbitalentWorkHistoryVo"/>
+        where f_id = #{fId}
+    </select>
+        
+    <insert id="insertTbitalentWorkHistory" parameterType="TbitalentWorkHistory" useGeneratedKeys="true" keyProperty="fId">
+        insert into tbitalent_work_history
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fResumeId != null and fResumeId != ''">f_resume_id,</if>
+            <if test="fStartTime != null and fStartTime != ''">f_start_time,</if>
+            <if test="fEndTime != null and fEndTime != ''">f_end_time,</if>
+            <if test="fCompany != null and fCompany != ''">f_company,</if>
+            <if test="fPost != null and fPost != ''">f_post,</if>
+            <if test="fSalary != null and fSalary != ''">f_salary,</if>
+            <if test="fLeave != null and fLeave != ''">f_leave,</if>
+            <if test="fTel != null and fTel != ''">f_tel,</if>
+            <if test="fWitness != null and fWitness != ''">f_witness,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fResumeId != null and fResumeId != ''">#{fResumeId},</if>
+            <if test="fStartTime != null and fStartTime != ''">#{fStartTime},</if>
+            <if test="fEndTime != null and fEndTime != ''">#{fEndTime},</if>
+            <if test="fCompany != null and fCompany != ''">#{fCompany},</if>
+            <if test="fPost != null and fPost != ''">#{fPost},</if>
+            <if test="fSalary != null and fSalary != ''">#{fSalary},</if>
+            <if test="fLeave != null and fLeave != ''">#{fLeave},</if>
+            <if test="fTel != null and fTel != ''">#{fTel},</if>
+            <if test="fWitness != null and fWitness != ''">#{fWitness},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbitalentWorkHistory" parameterType="TbitalentWorkHistory">
+        update tbitalent_work_history
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fResumeId != null and fResumeId != ''">f_resume_id = #{fResumeId},</if>
+            <if test="fStartTime != null and fStartTime != ''">f_start_time = #{fStartTime},</if>
+            <if test="fEndTime != null and fEndTime != ''">f_end_time = #{fEndTime},</if>
+            <if test="fCompany != null and fCompany != ''">f_company = #{fCompany},</if>
+            <if test="fPost != null and fPost != ''">f_post = #{fPost},</if>
+            <if test="fSalary != null and fSalary != ''">f_salary = #{fSalary},</if>
+            <if test="fLeave != null and fLeave != ''">f_leave = #{fLeave},</if>
+            <if test="fTel != null and fTel != ''">f_tel = #{fTel},</if>
+            <if test="fWitness != null and fWitness != ''">f_witness = #{fWitness},</if>
+        </trim>
+        where f_id = #{fId}
+    </update>
+
+    <delete id="deleteTbitalentWorkHistoryByFId" parameterType="Long">
+        delete from tbitalent_work_history where f_id = #{fId}
+    </delete>
+
+    <delete id="deleteTbitalentWorkHistoryByFIds" parameterType="String">
+        delete from tbitalent_work_history where f_id in 
+        <foreach item="fId" collection="array" open="(" separator="," close=")">
+            #{fId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteTbitalentWorkHistoryByResumeId">
+        delete from tbitalent_work_history where f_resume_id = #{fResumeId}
+    </delete>
+
+</mapper>

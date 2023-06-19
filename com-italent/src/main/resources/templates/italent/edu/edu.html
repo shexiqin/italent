@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('教育状况列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>简历标识：</label>
+                                <input type="text" name="fResumeId"/>
+                            </li>
+                            <li>
+                                <label>开始时间：</label>
+                                <input type="text" class="time-input" placeholder="请选择开始时间" name="fStartTime"/>
+                            </li>
+                            <li>
+                                <label>毕业时间：</label>
+                                <input type="text" class="time-input" placeholder="请选择毕业时间" name="fEndTime"/>
+                            </li>
+                            <li>
+                                <label>院校：</label>
+                                <input type="text" name="fSchool"/>
+                            </li>
+                            <li>
+                                <label>专业：</label>
+                                <input type="text" name="fMajor"/>
+                            </li>
+                            <li>
+                                <label>学历：</label>
+                                <select name="fEduDegree" th:with="type=${@dict.getType('edu_level')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>入学方式：</label>
+                                <select name="fType" th:with="type=${@dict.getType('educational_background_type')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="italent:edu:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="italent:edu:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="italent:edu:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="italent:edu:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('italent:edu:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('italent:edu:remove')}]];
+        var fEduDegreeDatas = [[${@dict.getType('edu_level')}]];
+        var fTypeDatas = [[${@dict.getType('educational_background_type')}]];
+        var prefix = ctx + "italent/edu";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "教育状况",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'fId',
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'fResumeId',
+                    title: '简历标识'
+                },
+                {
+                    field: 'fStartTime',
+                    title: '开始时间'
+                },
+                {
+                    field: 'fEndTime',
+                    title: '毕业时间'
+                },
+                {
+                    field: 'fSchool',
+                    title: '院校'
+                },
+                {
+                    field: 'fMajor',
+                    title: '专业'
+                },
+                {
+                    field: 'fEduDegree',
+                    title: '学历',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(fEduDegreeDatas, value);
+                    }
+                },
+                {
+                    field: 'fType',
+                    title: '入学方式',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(fTypeDatas, value);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.fId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.fId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

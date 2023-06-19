@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.italent.mapper.TbitalentEnterpriseMapper">
+    
+    <resultMap type="TbitalentEnterprise" id="TbitalentEnterpriseResult">
+        <result property="fId"    column="f_id"    />
+        <result property="fName"    column="f_name"    />
+        <result property="fIndustry"    column="f_industry"    />
+        <result property="fDescribe"    column="f_describe"    />
+        <result property="fSize"    column="f_size"    />
+        <result property="fAddress"    column="f_address"    />
+        <result property="fProvinces"    column="f_provinces"    />
+        <result property="fCity"    column="f_city"    />
+        <result property="fLogo"    column="f_logo"    />
+        <result property="fLng"    column="f_lng"    />
+        <result property="fLat"    column="f_lat"    />
+        <result property="fHrEmail"    column="f_hr_email"    />
+        <result property="fRemark"    column="f_remark"    />
+        <result property="fCreateTime"    column="f_create_time"    />
+        <result property="fCreateBy"    column="f_create_by"    />
+        <result property="fUpdateTime"    column="f_update_time"    />
+        <result property="fUpdateBy"    column="f_update_by"    />
+    </resultMap>
+
+    <sql id="selectTbitalentEnterpriseVo">
+        select f_id, f_name, f_industry, f_describe, f_size, f_address, f_provinces, f_city, f_logo, f_lng, f_lat, f_hr_email, f_remark, f_create_time, f_create_by, f_update_time, f_update_by from tbitalent_enterprise
+    </sql>
+
+    <select id="selectTbitalentEnterpriseList" parameterType="TbitalentEnterprise" resultMap="TbitalentEnterpriseResult">
+        <include refid="selectTbitalentEnterpriseVo"/>
+        <where>  
+            <if test="fName != null  and fName != ''"> and f_name like concat('%', #{fName}, '%')</if>
+            <if test="fIndustry != null  and fIndustry != ''"> and f_industry like concat('%', #{fIndustry}, '%')</if>
+            <if test="fDescribe != null  and fDescribe != ''"> and f_describe = #{fDescribe}</if>
+            <if test="fSize != null  and fSize != ''"> and f_size = #{fSize}</if>
+            <if test="fAddress != null  and fAddress != ''"> and f_address = #{fAddress}</if>
+            <if test="fProvinces != null  and fProvinces != ''"> and f_provinces = #{fProvinces}</if>
+            <if test="fCity != null  and fCity != ''"> and f_city = #{fCity}</if>
+            <if test="fLogo != null  and fLogo != ''"> and f_logo = #{fLogo}</if>
+            <if test="fLng != null "> and f_lng = #{fLng}</if>
+            <if test="fLat != null "> and f_lat = #{fLat}</if>
+            <if test="fHrEmail != null  and fHrEmail != ''"> and f_hr_email = #{fHrEmail}</if>
+            <if test="fRemark != null  and fRemark != ''"> and f_remark = #{fRemark}</if>
+            <if test="fCreateTime != null "> and f_create_time = #{fCreateTime}</if>
+            <if test="fCreateBy != null  and fCreateBy != ''"> and f_create_by = #{fCreateBy}</if>
+            <if test="fUpdateTime != null "> and f_update_time = #{fUpdateTime}</if>
+            <if test="fUpdateBy != null  and fUpdateBy != ''"> and f_update_by = #{fUpdateBy}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbitalentEnterpriseByFId" parameterType="Long" resultMap="TbitalentEnterpriseResult">
+        <include refid="selectTbitalentEnterpriseVo"/>
+        where f_id = #{fId}
+    </select>
+        
+    <insert id="insertTbitalentEnterprise" parameterType="TbitalentEnterprise" useGeneratedKeys="true" keyProperty="fId">
+        insert into tbitalent_enterprise
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fName != null and fName != ''">f_name,</if>
+            <if test="fIndustry != null and fIndustry != ''">f_industry,</if>
+            <if test="fDescribe != null">f_describe,</if>
+            <if test="fSize != null">f_size,</if>
+            <if test="fAddress != null">f_address,</if>
+            <if test="fProvinces != null">f_provinces,</if>
+            <if test="fCity != null">f_city,</if>
+            <if test="fLogo != null">f_logo,</if>
+            <if test="fLng != null">f_lng,</if>
+            <if test="fLat != null">f_lat,</if>
+            <if test="fHrEmail != null">f_hr_email,</if>
+            <if test="fRemark != null">f_remark,</if>
+            <if test="fCreateTime != null">f_create_time,</if>
+            <if test="fCreateBy != null">f_create_by,</if>
+            <if test="fUpdateTime != null">f_update_time,</if>
+            <if test="fUpdateBy != null">f_update_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fName != null and fName != ''">#{fName},</if>
+            <if test="fIndustry != null and fIndustry != ''">#{fIndustry},</if>
+            <if test="fDescribe != null">#{fDescribe},</if>
+            <if test="fSize != null">#{fSize},</if>
+            <if test="fAddress != null">#{fAddress},</if>
+            <if test="fProvinces != null">#{fProvinces},</if>
+            <if test="fCity != null">#{fCity},</if>
+            <if test="fLogo != null">#{fLogo},</if>
+            <if test="fLng != null">#{fLng},</if>
+            <if test="fLat != null">#{fLat},</if>
+            <if test="fHrEmail != null">#{fHrEmail},</if>
+            <if test="fRemark != null">#{fRemark},</if>
+            <if test="fCreateTime != null">#{fCreateTime},</if>
+            <if test="fCreateBy != null">#{fCreateBy},</if>
+            <if test="fUpdateTime != null">#{fUpdateTime},</if>
+            <if test="fUpdateBy != null">#{fUpdateBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbitalentEnterprise" parameterType="TbitalentEnterprise">
+        update tbitalent_enterprise
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fName != null and fName != ''">f_name = #{fName},</if>
+            <if test="fIndustry != null and fIndustry != ''">f_industry = #{fIndustry},</if>
+            <if test="fDescribe != null">f_describe = #{fDescribe},</if>
+            <if test="fSize != null">f_size = #{fSize},</if>
+            <if test="fAddress != null">f_address = #{fAddress},</if>
+            <if test="fProvinces != null">f_provinces = #{fProvinces},</if>
+            <if test="fCity != null">f_city = #{fCity},</if>
+            <if test="fLogo != null">f_logo = #{fLogo},</if>
+            <if test="fLng != null">f_lng = #{fLng},</if>
+            <if test="fLat != null">f_lat = #{fLat},</if>
+            <if test="fHrEmail != null">f_hr_email = #{fHrEmail},</if>
+            <if test="fRemark != null">f_remark = #{fRemark},</if>
+            <if test="fCreateTime != null">f_create_time = #{fCreateTime},</if>
+            <if test="fCreateBy != null">f_create_by = #{fCreateBy},</if>
+            <if test="fUpdateTime != null">f_update_time = #{fUpdateTime},</if>
+            <if test="fUpdateBy != null">f_update_by = #{fUpdateBy},</if>
+        </trim>
+        where f_id = #{fId}
+    </update>
+
+    <delete id="deleteTbitalentEnterpriseByFId" parameterType="Long">
+        delete from tbitalent_enterprise where f_id = #{fId}
+    </delete>
+
+    <delete id="deleteTbitalentEnterpriseByFIds" parameterType="String">
+        delete from tbitalent_enterprise where f_id in 
+        <foreach item="fId" collection="array" open="(" separator="," close=")">
+            #{fId}
+        </foreach>
+    </delete>
+
+</mapper>

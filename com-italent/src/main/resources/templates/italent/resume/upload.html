@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<th:block th:include="include :: header('文件上传')" />
+	<th:block th:include="include :: bootstrap-fileinput-css" />
+</head>
+<body class="gray-bg">
+    <div class="main-content">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+                    	<div class="form-group">
+	                        <div class="file-loading">
+					            <input class="file-upload" name="file" type="file">
+					        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: bootstrap-fileinput-js" />
+    <script th:inline="javascript">
+    
+    $(document).ready(function () {
+        var fId = [[${tbitalentResume.fId}]];
+    	// 单图上传
+        $(".file-upload").fileinput({
+            uploadUrl: ctx + 'italent/resume/upload',
+            maxFileCount: 1,
+            autoReplace: true,
+            uploadAsync: false,
+            showUpload: false, // 由于是提交表单上传，这里禁用掉上传按钮
+            uploadExtraData: {fId: fId},
+            layoutTemplates: {actionUpload: ''}, // 由于是提交表单上传，这里禁用掉每个组件的上传按钮
+            allowedFileExtensions: ['doc', 'docx', 'pdf'],
+        }).on('filebatchuploadsuccess', function (event, data, previewId, index) {
+            var rsp = data.response;
+            var code = rsp.code;
+
+            if(code == 0 || code == 200){
+                $.modal.confirm(rsp.msg, function(){
+                    $.modal.close();
+                    $.each(parent, function(i, v){
+                        // 父页面表格刷新
+                        if(v != null && typeof v.refresh === 'function'){
+                            v.refresh();
+                        };
+                    })
+
+                });
+            } else {
+                $.modal.alert(rsp.msg);
+            }
+        }).on('fileremoved', function (event, id, index) {
+            $("input[name='" + event.currentTarget.id + "']").val('')
+        })
+    });
+
+    function submitHandler() {
+        $(".file-upload").fileinput("upload");
+    }
+    </script>
+</body>
+</html>

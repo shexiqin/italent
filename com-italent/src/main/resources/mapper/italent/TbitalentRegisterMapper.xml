@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.italent.mapper.TbitalentRegisterMapper">
+    
+    <resultMap type="TbitalentRegister" id="TbitalentRegisterResult">
+        <result property="fId"    column="f_id"    />
+        <result property="fJobname"    column="f_jobname"    />
+        <result property="fHopeSalary"    column="f_hope_salary"    />
+        <result property="fEntryDate"    column="f_entry_date"    />
+        <result property="fIdcard"    column="f_idcard"    />
+        <result property="fName"    column="f_name"    />
+        <result property="fSex"    column="f_sex"    />
+        <result property="fBirthday"    column="f_birthday"    />
+        <result property="fTel"    column="f_tel"    />
+        <result property="fNation"    column="f_nation"    />
+        <result property="fMarry"    column="f_marry"    />
+        <result property="fHobby"    column="f_hobby"    />
+        <result property="fMail"    column="f_mail"    />
+        <result property="fPoliticalStatus"    column="f_political_status"    />
+        <result property="fResidenceAddress"    column="f_residence_address"    />
+        <result property="fNowAddress"    column="f_now_address"    />
+        <result property="fSource"    column="f_source"    />
+        <result property="fHr"    column="f_hr"    />
+        <result property="fRemark"    column="f_remark"    />
+        <result property="fCreateby"    column="f_createby"    />
+        <result property="fCreatetime"    column="f_createtime"    />
+        <result property="fUpdateby"    column="f_updateby"    />
+        <result property="fUpdatetime"    column="f_updatetime"    />
+    </resultMap>
+
+    <sql id="selectTbitalentRegisterVo">
+        select f_id, f_jobname, f_hope_salary, f_entry_date, f_idcard, f_name, f_sex, f_birthday, f_tel, f_nation, f_marry, f_hobby, f_mail, f_political_status, f_residence_address, f_now_address, f_source, f_hr, f_remark, f_createby, f_createtime, f_updateby, f_updatetime from tbitalent_register
+    </sql>
+
+    <select id="selectTbitalentRegisterList" parameterType="TbitalentRegister" resultMap="TbitalentRegisterResult">
+        <include refid="selectTbitalentRegisterVo"/>
+        <where>  
+            <if test="fJobname != null  and fJobname != ''"> and f_jobname like concat('%', #{fJobname}, '%')</if>
+            <if test="fHopeSalary != null  and fHopeSalary != ''"> and f_hope_salary = #{fHopeSalary}</if>
+            <if test="fEntryDate != null "> and f_entry_date = #{fEntryDate}</if>
+            <if test="fIdcard != null  and fIdcard != ''"> and f_idcard = #{fIdcard}</if>
+            <if test="fName != null  and fName != ''"> and f_name like concat('%', #{fName}, '%')</if>
+            <if test="fSex != null  and fSex != ''"> and f_sex = #{fSex}</if>
+            <if test="fBirthday != null "> and f_birthday = #{fBirthday}</if>
+            <if test="fTel != null  and fTel != ''"> and f_tel = #{fTel}</if>
+            <if test="fNation != null  and fNation != ''"> and f_nation = #{fNation}</if>
+            <if test="fMarry != null  and fMarry != ''"> and f_marry = #{fMarry}</if>
+            <if test="fHobby != null  and fHobby != ''"> and f_hobby = #{fHobby}</if>
+            <if test="fMail != null  and fMail != ''"> and f_mail = #{fMail}</if>
+            <if test="fPoliticalStatus != null  and fPoliticalStatus != ''"> and f_political_status = #{fPoliticalStatus}</if>
+            <if test="fResidenceAddress != null  and fResidenceAddress != ''"> and f_residence_address like concat('%', #{fResidenceAddress}, '%')</if>
+            <if test="fNowAddress != null  and fNowAddress != ''"> and f_now_address like concat('%', #{fNowAddress}, '%')</if>
+            <if test="fSource != null  and fSource != ''"> and f_source = #{fSource}</if>
+            <if test="fHr != null  and fHr != ''"> and f_hr = #{fHr}</if>
+            <if test="fRemark != null  and fRemark != ''"> and f_remark like concat('%', #{fRemark}, '%')</if>
+            <if test="fCreateby != null  and fCreateby != ''"> and f_createby = #{fCreateby}</if>
+            <if test="fCreatetime != null "> and f_createtime = #{fCreatetime}</if>
+            <if test="fUpdateby != null  and fUpdateby != ''"> and f_updateby = #{fUpdateby}</if>
+            <if test="fUpdatetime != null "> and f_updatetime = #{fUpdatetime}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbitalentRegisterByFId" parameterType="Long" resultMap="TbitalentRegisterResult">
+        <include refid="selectTbitalentRegisterVo"/>
+        where f_id = #{fId}
+    </select>
+        
+    <insert id="insertTbitalentRegister" parameterType="TbitalentRegister" useGeneratedKeys="true" keyProperty="fId">
+        insert into tbitalent_register
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fJobname != null and fJobname != ''">f_jobname,</if>
+            <if test="fHopeSalary != null and fHopeSalary != ''">f_hope_salary,</if>
+            <if test="fEntryDate != null">f_entry_date,</if>
+            <if test="fIdcard != null and fIdcard != ''">f_idcard,</if>
+            <if test="fName != null and fName != ''">f_name,</if>
+            <if test="fSex != null and fSex != ''">f_sex,</if>
+            <if test="fBirthday != null">f_birthday,</if>
+            <if test="fTel != null and fTel != ''">f_tel,</if>
+            <if test="fNation != null and fNation != ''">f_nation,</if>
+            <if test="fMarry != null and fMarry != ''">f_marry,</if>
+            <if test="fHobby != null and fHobby != ''">f_hobby,</if>
+            <if test="fMail != null and fMail != ''">f_mail,</if>
+            <if test="fPoliticalStatus != null and fPoliticalStatus != ''">f_political_status,</if>
+            <if test="fResidenceAddress != null and fResidenceAddress != ''">f_residence_address,</if>
+            <if test="fNowAddress != null and fNowAddress != ''">f_now_address,</if>
+            <if test="fSource != null and fSource != ''">f_source,</if>
+            <if test="fHr != null and fHr != ''">f_hr,</if>
+            <if test="fRemark != null">f_remark,</if>
+            <if test="fCreateby != null">f_createby,</if>
+            <if test="fCreatetime != null">f_createtime,</if>
+            <if test="fUpdateby != null">f_updateby,</if>
+            <if test="fUpdatetime != null">f_updatetime,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fJobname != null and fJobname != ''">#{fJobname},</if>
+            <if test="fHopeSalary != null and fHopeSalary != ''">#{fHopeSalary},</if>
+            <if test="fEntryDate != null">#{fEntryDate},</if>
+            <if test="fIdcard != null and fIdcard != ''">#{fIdcard},</if>
+            <if test="fName != null and fName != ''">#{fName},</if>
+            <if test="fSex != null and fSex != ''">#{fSex},</if>
+            <if test="fBirthday != null">#{fBirthday},</if>
+            <if test="fTel != null and fTel != ''">#{fTel},</if>
+            <if test="fNation != null and fNation != ''">#{fNation},</if>
+            <if test="fMarry != null and fMarry != ''">#{fMarry},</if>
+            <if test="fHobby != null and fHobby != ''">#{fHobby},</if>
+            <if test="fMail != null and fMail != ''">#{fMail},</if>
+            <if test="fPoliticalStatus != null and fPoliticalStatus != ''">#{fPoliticalStatus},</if>
+            <if test="fResidenceAddress != null and fResidenceAddress != ''">#{fResidenceAddress},</if>
+            <if test="fNowAddress != null and fNowAddress != ''">#{fNowAddress},</if>
+            <if test="fSource != null and fSource != ''">#{fSource},</if>
+            <if test="fHr != null and fHr != ''">#{fHr},</if>
+            <if test="fRemark != null">#{fRemark},</if>
+            <if test="fCreateby != null">#{fCreateby},</if>
+            <if test="fCreatetime != null">#{fCreatetime},</if>
+            <if test="fUpdateby != null">#{fUpdateby},</if>
+            <if test="fUpdatetime != null">#{fUpdatetime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbitalentRegister" parameterType="TbitalentRegister">
+        update tbitalent_register
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fJobname != null and fJobname != ''">f_jobname = #{fJobname},</if>
+            <if test="fHopeSalary != null and fHopeSalary != ''">f_hope_salary = #{fHopeSalary},</if>
+            <if test="fEntryDate != null">f_entry_date = #{fEntryDate},</if>
+            <if test="fIdcard != null and fIdcard != ''">f_idcard = #{fIdcard},</if>
+            <if test="fName != null and fName != ''">f_name = #{fName},</if>
+            <if test="fSex != null and fSex != ''">f_sex = #{fSex},</if>
+            <if test="fBirthday != null">f_birthday = #{fBirthday},</if>
+            <if test="fTel != null and fTel != ''">f_tel = #{fTel},</if>
+            <if test="fNation != null and fNation != ''">f_nation = #{fNation},</if>
+            <if test="fMarry != null and fMarry != ''">f_marry = #{fMarry},</if>
+            <if test="fHobby != null and fHobby != ''">f_hobby = #{fHobby},</if>
+            <if test="fMail != null and fMail != ''">f_mail = #{fMail},</if>
+            <if test="fPoliticalStatus != null and fPoliticalStatus != ''">f_political_status = #{fPoliticalStatus},</if>
+            <if test="fResidenceAddress != null and fResidenceAddress != ''">f_residence_address = #{fResidenceAddress},</if>
+            <if test="fNowAddress != null and fNowAddress != ''">f_now_address = #{fNowAddress},</if>
+            <if test="fSource != null and fSource != ''">f_source = #{fSource},</if>
+            <if test="fHr != null and fHr != ''">f_hr = #{fHr},</if>
+            <if test="fRemark != null">f_remark = #{fRemark},</if>
+            <if test="fCreateby != null">f_createby = #{fCreateby},</if>
+            <if test="fCreatetime != null">f_createtime = #{fCreatetime},</if>
+            <if test="fUpdateby != null">f_updateby = #{fUpdateby},</if>
+            <if test="fUpdatetime != null">f_updatetime = #{fUpdatetime},</if>
+        </trim>
+        where f_id = #{fId}
+    </update>
+
+    <delete id="deleteTbitalentRegisterByFId" parameterType="Long">
+        delete from tbitalent_register where f_id = #{fId}
+    </delete>
+
+    <delete id="deleteTbitalentRegisterByFIds" parameterType="String">
+        delete from tbitalent_register where f_id in 
+        <foreach item="fId" collection="array" open="(" separator="," close=")">
+            #{fId}
+        </foreach>
+    </delete>
+
+</mapper>

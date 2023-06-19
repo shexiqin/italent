@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增人才库管理')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+    <th:block th:include="include :: summernote-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-resume-add">
+            <div class="form-group">
+                <label class="col-sm-1 control-label">学历类型：</label>
+                <div class="col-sm-10">
+                    <select name="fEducationalBackground" class="form-control" th:with="type=${@dict.getType('educational_background_type')}">
+                        <option value="">请选择学历类型</option>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                    <span class="help-block m-b-none" style="color: red; margin-top: 10px;">
+                        <i class="fa fa-info-circle"></i> 可提前将简历按照学历类型划分文件夹，选择此项后，将文件夹拖拽至简历附件批量导入。
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label">录取方式：</label>
+                <div class="col-sm-10">
+                    <select name="fEnrollType" class="form-control" th:with="type=${@dict.getType('enroll_type')}">
+                        <option value="">请选择录取方式</option>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                    <span class="help-block m-b-none" style="color: red; margin-top: 10px;">
+                        <i class="fa fa-info-circle"></i> 可提前将简历按照录取方式划分文件夹，选择此项后，将文件夹拖拽至简历附件批量导入。
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label">简历来源：</label>
+                <div class="col-sm-10">
+                    <select name="fSource" class="form-control" th:with="type=${@dict.getType('resume_from')}">
+                        <option value="">请选择简历来源</option>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                    <span class="help-block m-b-none" style="color: red; margin-top: 10px;">
+                        <i class="fa fa-info-circle"></i> 可提前将简历按照简历来源划分文件夹，选择此项后，将文件夹拖拽至简历附件批量导入。
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label">应聘职位：</label>
+                <div class="col-sm-10">
+                    <input name="fJobname" class="form-control" placeholder="请输入应聘职位" type="text">
+                    <span class="help-block m-b-none" style="color: red; margin-top: 10px;">
+                        <i class="fa fa-info-circle"></i> 可提前将简历按照应聘职位划分文件夹，选择此项后，将文件夹拖拽至简历附件批量导入。
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label is-required">简历附件：</label>
+                <div class="col-sm-10">
+                    <input type="hidden" name="fLocation">
+                    <div class="file-loading">
+                        <input class="form-control file-upload" id="fLocation" multiple name="files" type="file">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: bootstrap-fileinput-js"/>
+    <th:block th:include="include :: summernote-js" />
+    <script th:inline="javascript">
+        var prefix = ctx + "italent/resume"
+        $("#form-resume-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $(".file-upload").fileinput("upload");
+            }
+        }
+
+        $("input[name='fBirthday']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='fCreatetime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $(".file-upload").fileinput({
+            uploadUrl: prefix + '/addBatch',
+            minFileCount: 1,
+            // maxFileCount: 1,
+            autoReplace: true,
+            uploadAsync: false,
+            showUpload: false, // 由于是提交表单上传，这里禁用掉上传按钮
+            layoutTemplates: {actionUpload: ''}, // 由于是提交表单上传，这里禁用掉每个组件的上传按钮
+            allowedFileExtensions: ['doc', 'docx', 'pdf'],// 提交携带参数
+            uploadExtraData: function(previewId, index){
+                var obj = {};
+                // 学历类型
+                obj.fEducationalBackground= $("select[name='fEducationalBackground']").val();
+                // 录取方式
+                obj.fEnrollType= $("select[name='fEnrollType']").val();
+                // 简历来源
+                obj.fSource= $("select[name='fSource']").val();
+                // 应聘职位
+                obj.fJobname= $("input[name='fJobname']").val();
+                return obj;
+            }
+        }).on('filebatchuploadsuccess', function (event, data, previewId, index) {
+            var rsp = data.response;
+            var code = rsp.code;
+
+            if(code == 0 || code == 200){
+                $.modal.confirm(rsp.msg, function(){
+                    $.modal.close();
+                    $.each(parent, function(i, v){
+                        // 父页面表格刷新
+                        if(v != null && typeof v.refresh === 'function'){
+                            v.refresh();
+                        };
+                    })
+
+                });
+            } else {
+                $.modal.alert(rsp.msg);
+            }
+        }).on('fileremoved', function (event, id, index) {
+            $("input[name='" + event.currentTarget.id + "']").val('')
+        })
+
+        $(function() {
+            $('.summernote').summernote({
+                lang: 'zh-CN',
+                dialogsInBody: true,
+                callbacks: {
+                    onChange: function(contents, $edittable) {
+                        $("input[name='" + this.id + "']").val(contents);
+                    },
+                    onImageUpload: function(files) {
+                        var obj = this;
+                    	var data = new FormData();
+                    	data.append("file", files[0]);
+                    	$.ajax({
+                            type: "post",
+                            url: ctx + "common/upload",
+                    		data: data,
+                    		cache: false,
+                    		contentType: false,
+                    		processData: false,
+                    		dataType: 'json',
+                    		success: function(result) {
+                    		    if (result.code == web_status.SUCCESS) {
+                    		        $('#' + obj.id).summernote('insertImage', result.url);
+                    		    } else {
+                    		        $.modal.alertError(result.msg);
+                    		    }
+                    		},
+                    		error: function(error) {
+                    		    $.modal.alertWarning("图片上传失败。");
+                    		}
+                    	});
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

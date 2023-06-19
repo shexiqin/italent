@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('八六三软件-应聘登记')" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <style>
+        .form-header{
+            margin: 8px 0 25px 0;
+        }
+    </style>
+</head>
+<body class="white-bg">
+    <div class="col-sm-12" style="margin: 40px 0;">
+        <h2 style="text-align: center; font-weight: bold; letter-spacing: 8px;">八六三<span style="color: #1bb394;">应聘</span>登记<i class="fa fa-send-o" style="color: #1bb394; font-size: 28px;"></i></h2>
+        <h5 style="text-align: center; font-weight: bold; letter-spacing: 4px;">诚信、发展、合作、共赢</h5>
+    </div>
+    <div class="main-content">
+        <form class="form-horizontal m" id="form-resume-add" >
+            <input type="hidden" name="fHr" class="form-control" readonly th:value="${hr}">
+            <h4 class="form-header h4">基本信息</h4>
+            <div class="row">
+                <div class="col-sm-3 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">应聘职位：</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" name="fJobname" required th:with="posts=${tbitalentPosts}">
+                                <option value="">请选择要应聘的职位</option>
+                                <option th:each="post:${posts}" th:text="| [${post.fPostname}] ${post.fJobname}|" th:value="${post.fJobname}">Java开发工程师</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">期望薪资：</label>
+                        <div class="col-sm-8">
+                            <input type="number" name="fHopeSalary" value="" class="form-control" placeholder="单位是千" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">入职日期：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group date">
+                                <input  name="fEntryDate" id="fEntryDate" class="form-control no-key" placeholder="yyyy-MM-dd" type="text">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">身份证号码：</label>
+                        <div class="col-sm-8">
+                            <input id="shenfenzheng" type="text" name="fIdcard" class="form-control" placeholder="请输入身份证号码"  maxlength="18" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">姓名：</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="fName" class="form-control" placeholder="请输入姓名"  required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">性别：</label>
+                        <div class="col-sm-8">
+                            <select name="fSex" class="form-control m-b" th:with="type=${@dict.getType('sys_user_sex')}">
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">出生日期：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group date">
+                                <input name="fBirthday" id="fBirthday" class="form-control no-key" placeholder="yyyy-MM-dd" type="text">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">联系方式：</label>
+                        <div class="col-sm-8">
+                            <input id="tele" type="text" maxlength="11" name="fTel" class="form-control" placeholder="请输入电话"required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">民族：</label>
+                        <div class="col-sm-8">
+<!--                            <input type="text" name="fNation" class="form-control" placeholder="请输入民族" required>-->
+                            <select name="fNation" class="form-control">
+                                <option value="">请选择民族</option>
+                                <option value="汉族">汉族</option>
+                                <option value="回族">回族</option>
+                                <option value="维吾尔族">维吾尔族</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">婚姻状况：</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="fMarry" class="form-control" placeholder="请输入婚姻状况" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">爱好特长：</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="fHobby" class="form-control" placeholder="请输入爱好特长">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">电子邮箱：</label>
+                        <div class="col-sm-8">
+                            <input id="youxiang" type="mail" name="fMail" class="form-control" placeholder="请输入电子邮箱" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label is-required">政治面貌：</label>
+                        <div class="col-sm-9">
+                            <select name="fPoliticalStatus" class="form-control" required>
+                                <option value="">请选择政治面貌</option>
+                                <option value="群众">群众</option>
+                                <option value="党员">党员</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">户籍住址：</label>
+                        <div class="col-sm-9">
+                            <input type="mail" name="fResidenceAddress" class="form-control" placeholder="请输入户籍住址">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">现住址：</label>
+                        <div class="col-sm-9">
+                            <input type="mail" name="fNowAddress" class="form-control" placeholder="请输入户现住址">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label is-required">求职渠道：</label>
+                        <div class="col-sm-9">
+                            <select name="fSource" class="form-control m-b" required th:with="type=${@dict.getType('resume_from')}">
+                                <option value="">请选择求职渠道</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:if="${!#strings.equals('1', dict.remark)}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="col-sm-4 col-xs-6">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">HR 专员：</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="fHr" class="form-control" readonly th:value="${hr}">
+                        </div>
+                    </div>
+                </div>-->
+            </div>
+
+            <h4 class="form-header h4">家庭背景</h4>
+            <div class="row" id="family">
+                <div class="col-sm-12 info-box" style="padding: 0;">
+                    <div class="col-sm-12 col-xs-12">
+                        <div class="col-sm-6 col-sm-offset-3 col-xs-6 col-xs-offset-3">
+                            <h6 class="form-header h6" style="text-align: center">
+                                家庭成员 <span></span>
+                                <!--<i class="fa fa-remove delItem" style="float: right; color: red; cursor: pointer"></i>-->
+                            </h6>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">姓名：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="familyInfoList[0].fName" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">关系：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="familyInfoList[0].fRelation" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">年龄：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="familyInfoList[0].fAge" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">单位：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="familyInfoList[0].fCompany" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">职务：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="familyInfoList[0].fPost" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">电话：</label>
+                            <div class="col-sm-9">
+                                <input type="text" maxlength="11" name="familyInfoList[0].fTel" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12" style="margin-top: 20px;">
+                    <button type="button" class="btn btn-sm btn-info" style="width: 100%; font-size: 16px;" onclick="addFamily()"><i class="fa fa-plus"></i> 添加成员</button>&nbsp;
+                </div>
+            </div>
+
+            <h4 class="form-header h4">教育状况</h4>
+            <div class="row" id="edu">
+                <div class="col-sm-12 info-box" style="padding: 0;">
+                    <div class="col-sm-12 col-xs-12">
+                        <div class="col-sm-6 col-sm-offset-3 col-xs-6 col-xs-offset-3">
+                            <h6 class="form-header h6" style="text-align: center">
+                                教育状况 <span></span>
+                                <!--<i class="fa fa-remove delItem" style="float: right; color: red; cursor: pointer"></i>-->
+                            </h6>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">开始年月：</label>
+                            <div class="col-sm-9">
+                                <div class="input-group date">
+                                    <input name="eduHistoryList[0].fStartTime" class="form-control eduTime no-key" placeholder="yyyy-MM-dd" type="text" required>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">结束年月：</label>
+                            <div class="col-sm-9">
+                                <div class="input-group date">
+                                    <input name="eduHistoryList[0].fEndTime" class="form-control eduTime no-key" placeholder="yyyy-MM-dd" type="text" required>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">学校：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="eduHistoryList[0].fSchool" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">专业：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="eduHistoryList[0].fMajor" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">学历：</label>
+                            <div class="col-sm-9">
+                                <select name="eduHistoryList[0].fEduDegree" class="form-control m-b" required th:with="type=${@dict.getType('edu_level')}">
+                                    <option value="">请选择学历</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:if="${!#strings.equals('1', dict.remark)}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">类型：</label>
+                            <div class="col-sm-9">
+                                <select name="eduHistoryList[0].fEduBackground" class="form-control m-b" required th:with="type=${@dict.getType('educational_background_type')}">
+                                    <option value="">请选择学历类型</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">录取方式：</label>
+                            <div class="col-sm-9">
+                                <select name="eduHistoryList[0].fType" class="form-control m-b" required th:with="type=${@dict.getType('admission_type')}">
+                                    <option value="">请选择录取方式</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:if="${!#strings.equals('1', dict.remark)}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12" style="margin-top: 20px;">
+                    <button type="button" class="btn btn-sm btn-info" style="width: 100%; font-size: 16px;" onclick="addEdu()"><i class="fa fa-plus"></i> 添加教育</button>&nbsp;
+                </div>
+            </div>
+
+            <h4 class="form-header h4">培训经历</h4>
+            <div class="row" id="study">
+                <!--<div class="col-sm-12 info-box" style="padding: 0;">
+                    <div class="col-sm-12 col-xs-12">
+                        <div class="col-sm-6 col-sm-offset-3 col-xs-6 col-xs-offset-3">
+                            <h6 class="form-header h6" style="text-align: center">
+                                培训经历 <span>1</span>
+                                <i class="fa fa-remove delItem" style="float: right; color: red; cursor: pointer"></i>
+                            </h6>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">开始年月：</label>
+                            <div class="col-sm-9">
+                                <div class="input-group date">
+                                    <input name="drillHistoryList[0].fStartTime" class="form-control eduTime no-key" placeholder="yyyy-MM-dd" type="text">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">结束年月：</label>
+                            <div class="col-sm-9">
+                                <div class="input-group date">
+                                    <input name="drillHistoryList[0].fEndTime" class="form-control eduTime no-key" placeholder="yyyy-MM-dd" type="text">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">机构：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="drillHistoryList[0].fCompany" class="form-control" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">内容：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="drillHistoryList[0].fContent" class="form-control" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">证书：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="drillHistoryList[0].fCertificate" class="form-control" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">备注：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="drillHistoryList[0].fRemark" class="form-control" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
+            </div>
+            <div class="row">
+                <div class="col-sm-12" style="margin-top: 20px;">
+                    <button type="button" class="btn btn-sm btn-info" style="width: 100%; font-size: 16px;" onclick="addStudy()"><i class="fa fa-plus"></i> 添加培训经历</button>&nbsp;
+                </div>
+            </div>
+
+            <h4 class="form-header h4">工作经历</h4>
+            <div class="row" id="work">
+                <div class="col-sm-12 info-box" style="padding: 0;">
+                    <div class="col-sm-12 col-xs-12">
+                        <div class="col-sm-6 col-sm-offset-3 col-xs-6 col-xs-offset-3">
+                            <h6 class="form-header h6" style="text-align: center">
+                                工作经历 <span></span>
+                                <!--<i class="fa fa-remove delItem" style="float: right; color: red; cursor: pointer"></i>-->
+                            </h6>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">开始年月：</label>
+                            <div class="col-sm-9">
+                                <div class="input-group date">
+                                    <input name="workHistoryList[0].fStartTime" class="form-control eduTime no-key" placeholder="yyyy-MM-dd" type="text" required>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">结束年月：</label>
+                            <div class="col-sm-9">
+                                <div class="input-group date">
+                                    <input name="workHistoryList[0].fEndTime" class="form-control eduTime no-key" placeholder="yyyy-MM-dd" type="text" required>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">工作单位：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="workHistoryList[0].fCompany" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">职务：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="workHistoryList[0].fPost" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">薪资：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="workHistoryList[0].fSalary" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">离职原因：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="workHistoryList[0].fLeave" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">单位电话：</label>
+                            <div class="col-sm-9">
+                                <input type="text" maxlength="11" name="workHistoryList[0].fTel" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label is-required">证明人：</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="workHistoryList[0].fWitness" class="form-control" placeholder="" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12" style="margin-top: 20px;">
+                    <button type="button" class="btn btn-sm btn-info" style="width: 100%; font-size: 16px;" onclick="addWork()"><i class="fa fa-plus"></i> 添加工作经历</button>&nbsp;
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12" style="margin-top: 20px; color: red;">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="agree">
+                            <b>郑重承诺：本人所填表中内容均属实，若入职后被查证有不属实之处，自愿承担相应责任（终止劳动关系等）。<br>
+                            兹有本人向河南八六三软件股份有限公司递交职位申请书，为确保双方权益，现自愿并授权由河南八六三软件股份有限公司向原单位进行背景调查。特此授权。</b>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12" style="margin-top: 20px;">
+                    <button type="button" class="btn btn-sm btn-primary" style="width: 100%; font-size: 16px;" onclick="submitHandler()">保存</button>&nbsp;
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "italent/register";
+
+        $("#form-resume-add").validate({
+            focusCleanup: true
+        });
+
+
+        function submitHandler() {
+            var sfz=$('#shenfenzheng').val();
+            var tele=$('#tele').val();
+            var yx=$('#youxiang').val();
+            var rz=$('#fEntryDate').val();
+            var cs=$('#fBirthday').val();
+
+            var rzdate=new Date(rz.replace("-","/"));
+            var csdate=new Date(cs.replace("-","/"));
+            if ($.validate.form()) {
+                if($("#agree:checked").length < 1){
+                    $.modal.msgWarning("您还没有同意许可协议！");
+                    return;
+                }
+                $.operate.save(prefix + "/addReg", $('#form-resume-add').serialize(), function(data){
+                    if (sfz.length!=18){
+                        $.modal.msgWarning("您的身份证格式不正确！");
+                        return;
+                    }
+                    if(tele!=11){
+                        $.modal.msgWarning("您的电话号码格式不正确！");
+                        return;
+                    }
+                    if(yx.indexOf('@')==-1){
+                        $.modal.msgWarning("您的邮箱格式不正确！");
+                        return;
+                    }
+                    if(data.code == 0){
+                        $(".main-content").html('<h3 style="text-align: center; color: red;">恭喜，应聘登记成功！</h3>' +
+                            '<h4 style="text-align: center; color: red;">请联系您的 HR 专员！</h4>');
+                    }
+                });
+            } else {
+                $.modal.msgWarning("您还有信息没有填写！");
+            }
+        }
+
+        var laydateObj;
+        layui.use('laydate', function(){
+            laydateObj = layui.laydate;
+
+            // 入职日期
+            laydateObj.render({
+                elem: '#fEntryDate',
+            });
+
+            // 出生年月
+            laydateObj.render({
+                elem: '#fBirthday',
+            });
+
+            laydateObj.render({
+                elem: '.eduTime',
+                type: 'month'
+            });
+
+            $("*[lay-key]"). removeAttr("lay-key");
+        });
+
+        $(function(){
+            $.modal.alert("HR 专员【" + [[${hr}]] + "】提醒您，填写过程中请勿退出/刷新页面，以免造成信息丢失！");
+            delItem();
+        });
+
+        function noKeyBoard(){
+            $(".no-key").focus(function(){
+                document.activeElement.blur();//屏蔽默认键盘弹出；
+            })
+        }
+
+        function delItem(){
+            $(".delItem").click(function(){
+                var that = $(this);
+                $.modal.confirm("确定要删除该信息吗？", function(data){
+                    if(data){
+                        $(that).parents(".info-box").remove();
+                    }
+                });
+            });
+            noKeyBoard();
+        }
+
+        /* 家庭状况 TODO */
+        let familyIndex = 1;
+        function addFamily(){
+            var html = '<div class="col-sm-12 info-box" style="padding: 0;">\n' +
+                '                    <div class="col-sm-12 col-xs-12">\n' +
+                '                        <div class="col-sm-6 col-sm-offset-3 col-xs-6 col-xs-offset-3">\n' +
+                '                            <h6 class="form-header h6" style="text-align: center">\n' +
+                '                                家庭成员 <span></span>\n' +
+                '                                <i class="fa fa-remove delItem" style="float: right; color: red; cursor: pointer"></i>\n' +
+                '                            </h6>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label is-required">姓名：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="familyInfoList['+ (familyIndex) +'].fName" class="form-control" placeholder="" required>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label is-required">关系：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="familyInfoList['+ (familyIndex) +'].fRelation" class="form-control" placeholder="" required>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label is-required">年龄：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="familyInfoList['+ (familyIndex) +'].fAge" class="form-control" placeholder="" required>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label is-required">单位：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="familyInfoList['+ (familyIndex) +'].fCompany" class="form-control" placeholder="" required>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label is-required">职务：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="familyInfoList['+ (familyIndex) +'].fPost" class="form-control" placeholder="" required>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label is-required">电话：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" maxlength="11" name="familyInfoList['+ (familyIndex++) +'].fTel" class="form-control" placeholder="" required>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                </div>';
+            $("#family").append(html);
+            delItem();
+        }
+
+        /* 教育状况 TODO */
+        let eduIndex = 1;
+
+        // 学历数据
+        var eduLevel = [[${@dict.getType('edu_level')}]];
+        var eduHtml = '';
+        $.each(eduLevel, function(i, v){
+            eduHtml += '<option value="' + v.dictValue + '">' + v.dictLabel + '</option>';
+        });
+
+        // 类型数据
+        var educationalBackgroundType = [[${@dict.getType('educational_background_type')}]];
+        var ebtHtml = '';
+        $.each(educationalBackgroundType, function(i, v){
+            ebtHtml += '<option value="' + v.dictValue + '">' + v.dictLabel + '</option>';
+        });
+
+        // 录取方式数据
+        var admissionType = [[${@dict.getType('admission_type')}]];
+        var admissionHtml = '';
+        $.each(admissionType, function(i, v){
+            admissionHtml += '<option value="' + v.dictValue + '">' + v.dictLabel + '</option>';
+        });
+        function addEdu(){
+            var startTimeId = "es" + studyIndex;
+            var endTimeId = "ee" + studyIndex;
+            var html = '<div class="col-sm-12 info-box" style="padding: 0;">\n' +
+                '                    <div class="col-sm-12 col-xs-12">\n' +
+                '                        <div class="col-sm-6 col-sm-offset-3 col-xs-6 col-xs-offset-3">\n' +
+                '                            <h6 class="form-header h6" style="text-align: center">\n' +
+                '                                教育状况 <span></span>\n' +
+                '                                <i class="fa fa-remove delItem" style="float: right; color: red; cursor: pointer"></i>\n' +
+                '                            </h6>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label is-required">开始年月：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <div class="input-group date">\n' +
+                '                                    <input name="eduHistoryList[' + eduIndex + '].fStartTime" id="' + startTimeId + '"  class="form-control eduTime no-key" placeholder="yyyy-MM-dd" type="text" required>\n' +
+                '                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>\n' +
+                '                                </div>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">结束年月：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <div class="input-group date">\n' +
+                '                                    <input name="eduHistoryList[' + eduIndex + '].fEndTime" id="' + endTimeId + '"  class="form-control eduTime no-key" placeholder="yyyy-MM-dd" type="text" required>\n' +
+                '                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>\n' +
+                '                                </div>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label is-required">学校：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="eduHistoryList[' + eduIndex + '].fSchool" class="form-control" placeholder="" required>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label is-required">专业：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="eduHistoryList[' + eduIndex + '].fMajor" class="form-control" placeholder="" required>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label is-required">学历：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <select name="eduHistoryList[' + eduIndex + '].fEduDegree" class="form-control m-b" required>\n' +
+                '                                    <option value="">请选择学历</option>\n' + eduHtml +
+                '                                </select>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label is-required">类型：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <select name="eduHistoryList[' + eduIndex + '].fEduBackground" class="form-control m-b" required>\n' +
+                '                                    <option value="">请选择学历</option>\n' + ebtHtml +
+                '                                </select>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label is-required">录取方式：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <select name="eduHistoryList[' + (eduIndex++) + '].fType" class="form-control m-b" required>\n' +
+                '                                    <option value="">请选择录取方式</option>\n' + admissionHtml +
+                '                                </select>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                </div>';
+            $("#edu").append(html);
+
+            laydateObj.render({
+                elem: '#' + startTimeId,
+                type: 'month'
+            });
+
+            laydateObj.render({
+                elem: '#' + endTimeId,
+                type: 'month'
+            });
+
+            delItem();
+        }
+
+        /* 培训经历 TODO */
+        let studyIndex = 1;
+        function addStudy(){
+            var startTimeId = "ss" + studyIndex;
+            var endTimeId = "se" + studyIndex;
+            var html = '<div class="col-sm-12 info-box" style="padding: 0;">\n' +
+                '                    <div class="col-sm-12 col-xs-12">\n' +
+                '                        <div class="col-sm-6 col-sm-offset-3 col-xs-6 col-xs-offset-3">\n' +
+                '                            <h6 class="form-header h6" style="text-align: center">\n' +
+                '                                培训经历 <span></span>\n' +
+                '                                <i class="fa fa-remove delItem" style="float: right; color: red; cursor: pointer"></i>\n' +
+                '                            </h6>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">开始年月：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <div class="input-group date">\n' +
+                '                                    <input name="drillHistoryList[' + studyIndex + '].fStartTime" id="' + startTimeId + '" class="form-control eduTime no-key" placeholder="yyyy-MM-dd" type="text">\n' +
+                '                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>\n' +
+                '                                </div>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">结束年月：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <div class="input-group date">\n' +
+                '                                    <input name="drillHistoryList[' + studyIndex + '].fEndTime" id="' + endTimeId + '" class="form-control eduTime no-key" placeholder="yyyy-MM-dd" type="text">\n' +
+                '                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>\n' +
+                '                                </div>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">机构：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="drillHistoryList[' + studyIndex + '].fCompany" class="form-control" placeholder="">\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">内容：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="drillHistoryList[' + studyIndex + '].fContent" class="form-control" placeholder="">\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">证书：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="drillHistoryList[' + studyIndex + '].fCertificate" class="form-control" placeholder="">\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">备注：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="drillHistoryList[' + (studyIndex++) + '].fRemark" class="form-control" placeholder="">\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                </div>';
+            $("#study").append(html);
+
+            laydateObj.render({
+                elem: '#' + startTimeId,
+                type: 'month'
+            });
+
+            laydateObj.render({
+                elem: '#' + endTimeId,
+                type: 'month'
+            });
+
+            delItem();
+        }
+
+        /* 工作经历 TODO */
+        let workIndex = 1;
+        function addWork(){
+            var startTimeId = "ws" + workIndex;
+            var endTimeId = "we" + workIndex;
+            var html = '<div class="col-sm-12 info-box" style="padding: 0;">\n' +
+                '                    <div class="col-sm-12 col-xs-12">\n' +
+                '                        <div class="col-sm-6 col-sm-offset-3 col-xs-6 col-xs-offset-3">\n' +
+                '                            <h6 class="form-header h6" style="text-align: center">\n' +
+                '                                工作经历 <span></span>\n' +
+                '                                <i class="fa fa-remove delItem" style="float: right; color: red; cursor: pointer"></i>\n' +
+                '                            </h6>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">开始年月：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <div class="input-group date">\n' +
+                '                                    <input name="workHistoryList[' + workIndex + '].fStartTime" id="' + startTimeId + '" class="form-control eduTime no-key" placeholder="yyyy-MM-dd" type="text">\n' +
+                '                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>\n' +
+                '                                </div>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">结束年月：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <div class="input-group date">\n' +
+                '                                    <input name="workHistoryList[' + workIndex + '].fEndTime" id="' + endTimeId + '" class="form-control eduTime no-key" placeholder="yyyy-MM-dd" type="text">\n' +
+                '                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>\n' +
+                '                                </div>\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">工作单位：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="workHistoryList[' + workIndex + '].fCompany" class="form-control" placeholder="">\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">职务：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="workHistoryList[' + workIndex + '].fPost" class="form-control" placeholder="">\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">薪资：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="workHistoryList[' + workIndex + '].fSalary" class="form-control" placeholder="">\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">离职原因：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="workHistoryList[' + workIndex + '].fLeave" class="form-control" placeholder="">\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">单位电话：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" maxlength="11" name="workHistoryList[' + workIndex + '].fTel" class="form-control" placeholder="">\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="col-sm-2 col-xs-6">\n' +
+                '                        <div class="form-group">\n' +
+                '                            <label class="col-sm-3 control-label">证明人：</label>\n' +
+                '                            <div class="col-sm-9">\n' +
+                '                                <input type="text" name="workHistoryList[' + (workIndex++) + '].fWitness" class="form-control" placeholder="">\n' +
+                '                            </div>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                </div>';
+            $("#work").append(html);
+
+            laydateObj.render({
+                elem: '#' + startTimeId,
+                type: 'month'
+            });
+
+            laydateObj.render({
+                elem: '#' + endTimeId,
+                type: 'month'
+            });
+
+            delItem();
+        }
+    </script>
+</body>
+</html>

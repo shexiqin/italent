@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('企业档案列表')" />
+    <style>
+        .img-xs{
+            width: 40px;
+            height: 40px;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>公司名称：</label>
+                                <input type="text" name="fName"/>
+                            </li>
+                            <li>
+                                <label>行业：</label>
+                                <select name="fIndustry" th:with="type=${@dict.getType('trade_classify')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="italent:enterprise:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="italent:enterprise:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="italent:enterprise:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="italent:enterprise:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('italent:enterprise:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('italent:enterprise:remove')}]];
+        var fIndustryDatas = [[${@dict.getType('trade_classify')}]];
+        var prefix = ctx + "italent/enterprise";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "企业档案",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'fId',
+                    title: '主键',
+                    visible: false
+                },
+                {
+                    field: 'fLogo',
+                    title: 'Logo',
+                    formatter: function(value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    field: 'fName',
+                    title: '公司名称'
+                },
+                {
+                    field: 'fIndustry',
+                    title: '行业',
+                    formatter: function(value, row, index) {
+                        if(value == null){
+                            return ;
+                        }
+                        var vArray = value.split(",");
+                        var array = new Array();
+                        $.each(vArray, function(i, v){
+                            var result = $.table.selectDictLabel(fIndustryDatas, v);
+                            array.push('<label class="label label-info">'+result+'</label>');
+                        });
+
+                        return array.join(" ");
+                    }
+                },
+                {
+                    field: 'fDescribe',
+                    title: '公司描述',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value, '', 'open');
+                    }
+                },
+                {
+                    field: 'fSize',
+                    title: '公司规模',
+                    visible: false
+                },
+                {
+                    field: 'fAddress',
+                    title: '详细位置',
+                    visible: false
+                },
+                {
+                    field: 'fProvinces',
+                    title: '省份',
+                    visible: false
+                },
+                {
+                    field: 'fCity',
+                    title: '城市',
+                    visible: false
+                },
+                {
+                    field: 'fLng',
+                    title: '经度',
+                    visible: false
+                },
+                {
+                    field: 'fLat',
+                    title: '纬度',
+                    visible: false
+                },
+                {
+                    field: 'fHrEmail',
+                    title: 'HR邮箱',
+                    visible: false
+                },
+                {
+                    field: 'fRemark',
+                    title: '备注'
+                },
+                {
+                    field: 'fCreateTime',
+                    title: '创建时间'
+                },
+                {
+                    field: 'fCreateBy',
+                    title: '创建者'
+                },
+                {
+                    field: 'fUpdateTime',
+                    title: '更新时间',
+                    visible: false
+                },
+                {
+                    field: 'fUpdateBy',
+                    title: '更新者',
+                    visible: false
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.fId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.fId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

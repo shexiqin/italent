@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('')"/>
+    <style>
+        .title {
+            text-align: center;
+        }
+
+        .que_box .que {
+            margin: 0 0 20px 0;
+            overflow: auto;
+        }
+
+        .que_box .que .break {
+            white-space: normal;
+            word-break: break-all;
+        }
+
+        .save {
+            width: 100%;
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-recode-add">
+        <div class="col-xs-12" style="padding: 0">
+            <div class="col-xs-12 title" th:object="${tbqueNaireRecode}">
+                <h1 th:text="*{queNaire}">问卷标题xxxxxx</h1>
+            </div>
+            <div class="col-xs-12 que_box">
+                <div class="form-group" th:each="result,stat:${resultList}">
+                    <!-- 题目名称 -->
+                    <label class="col-xs-12 control-label" style="text-align: left" th:text="|${stat.count}、${result.params.title}|">问卷标识：</label>
+
+                    <!-- 题目选项 -->
+                    <div class="col-xs-12" th:text="${result.answer}"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <th:block th:include="include :: footer"/>
+    <script th:inline="javascript">
+    </script>
+</div>
+</body>
+</html>

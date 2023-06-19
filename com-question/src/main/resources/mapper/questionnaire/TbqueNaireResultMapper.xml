@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.questionnaire.mapper.TbqueNaireResultMapper">
+    
+    <resultMap type="TbqueNaireResult" id="TbqueNaireResultResult">
+        <result property="id"    column="id"    />
+        <result property="queNaire"    column="que_naire"    />
+        <result property="queContent"    column="que_content"    />
+        <result property="answer"    column="answer"    />
+        <result property="createUser"    column="create_user"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTbqueNaireResultVo">
+        select id, que_naire, que_content, answer, create_user, create_time, update_time, remark from tbque_naire_result
+    </sql>
+
+    <select id="selectTbqueNaireResultList" parameterType="TbqueNaireResult" resultMap="TbqueNaireResultResult">
+        <include refid="selectTbqueNaireResultVo"/>
+        <where>
+            <if test="queNaire != null  and queNaire != ''"> and que_naire = #{queNaire}</if>
+            <if test="queContent != null  and queContent != ''"> and que_content = #{queContent}</if>
+            <if test="answer != null  and answer != ''"> and answer = #{answer}</if>
+            <if test="createUser != null  and createUser != ''"> and create_user = #{createUser}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="remark != null  and remark != ''"> and remark = #{remark}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbqueNaireResultById" parameterType="Long" resultMap="TbqueNaireResultResult">
+        <include refid="selectTbqueNaireResultVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTbqueNaireResult" parameterType="TbqueNaireResult" useGeneratedKeys="true" keyProperty="id">
+        insert into tbque_naire_result
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="queNaire != null">que_naire,</if>
+            <if test="queContent != null">que_content,</if>
+            <if test="answer != null">answer,</if>
+            <if test="createUser != null">create_user,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="queNaire != null">#{queNaire},</if>
+            <if test="queContent != null">#{queContent},</if>
+            <if test="answer != null">#{answer},</if>
+            <if test="createUser != null">#{createUser},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbqueNaireResult" parameterType="TbqueNaireResult">
+        update tbque_naire_result
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="queNaire != null">que_naire = #{queNaire},</if>
+            <if test="queContent != null">que_content = #{queContent},</if>
+            <if test="answer != null">answer = #{answer},</if>
+            <if test="createUser != null">create_user = #{createUser},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTbqueNaireResultById" parameterType="Long">
+        delete from tbque_naire_result where id = #{id}
+    </delete>
+
+    <delete id="deleteTbqueNaireResultByIds" parameterType="String">
+        delete from tbque_naire_result where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

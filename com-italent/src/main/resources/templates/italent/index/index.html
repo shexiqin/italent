@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('首页列表')" />
+    <style>
+        .date-span-red{
+            color: rgb(237, 85, 101);
+        }
+        .date-span-green{
+            color: rgb(26, 179, 148);
+        }
+    </style>
+</head>
+<style>
+</style>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h5 class="m-b-md">人才库总量</h5>
+                        <h2 class="text-navy">
+                            <i class="fa fa-group"></i>
+                            <span th:text="${totalCount}"></span>
+                        </h2>
+                        <small>更新时间：<span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}"></span></small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h5 class="m-b-md"><span class="date-span-green" th:text="${#calendars.format(#calendars.createNow(), 'yyyy年')}"></span> 入库人数（年 / 季度 / 月 / 周 ）</h5>
+                        <h2 class="text-navy">
+                                <span th:text="${yearCount}"></span> /
+                                <span th:text="${quarterCount}"></span> /
+                                <span th:text="${monthCount}"></span> /
+                                <span th:text="${weekCount}"></span>
+                        </h2>
+                        <small>更新时间：<span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}"></span></small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h5 class="m-b-md"><span class="date-span-red" th:text="${#calendars.format(#calendars.createNow(), 'yyyy年MM月')}"></span> 面试人数</h5>
+                        <h2 class="text-danger">
+                            <i class="fa fa-slideshare"></i>
+                            <span th:text="${interviewCount}"></span>
+                        </h2>
+                        <small>更新时间：<span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}"></span></small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h5 class="m-b-md"><span class="date-span-red" th:text="${#calendars.format(#calendars.createNow(), 'yyyy年MM月')}"></span> 入职人数</h5>
+                        <h2 class="text-danger">
+                            <i class="fa fa-heart"></i>
+                            <span th:text="${entryCount}"></span>
+                        </h2>
+                        <small>更新时间：<span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}"></span></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-9">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5><span class="date-span-green" th:text="${#calendars.format(#calendars.createNow(), 'yyyy年')}"></span> 简历入库与面试次数统计</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="echarts" id="monthCountList-echarts" style="height: 350px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5><span class="date-span-red" th:text="${#calendars.format(#calendars.createNow(), 'yyyy年MM月')}"></span> 入库排行榜</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div style="height: 350px; overflow:auto;">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>排名</th>
+                                        <th>人事HR</th>
+                                        <th>数量</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="map,status:${currentMonthTopList}">
+                                        <td th:if="${status.count == 1}">
+                                            <label class='label label-primary' th:text="${status.count}"></label>
+                                        </td>
+                                        <td th:if="${status.count == 2}">
+                                            <label class='label label-info' th:text="${status.count}"></label>
+                                        </td>
+                                        <td th:if="${status.count == 3}">
+                                            <label class='label label-success' th:text="${status.count}"></label>
+                                        </td>
+                                        <td th:if="${status.count == 4}">
+                                            <label class='label label-warning' th:text="${status.count}"></label>
+                                        </td>
+                                        <td th:if="${status.count == 5}">
+                                            <label class='label label-danger' th:text="${status.count}"></label>
+                                        </td>
+                                        <td th:if="${status.count > 5}">
+                                            <label class='label label-default' th:text="${status.count}"></label>
+                                        </td>
+
+                                        <td th:text="${map.hr}"></td>
+                                        <td th:text="${map.cnt}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>来源统计</h5>
+                    </div>
+                    <input type="hidden" class="inp5" th:each="map:${resumeResourceList}" th:value="${map.source}">
+                    <input type="hidden" class="inp6" th:each="map:${resumeResourceList}" th:value="${map.cnt}">
+                    <div class="ibox-content">
+                        <div class="echarts" id="echarts-line-chart1"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>职位统计</h5>
+                    </div>
+                    <input type="hidden" class="inp7" th:each="map:${jobList}" th:value="${map.jobname}">
+                    <input type="hidden" class="inp8" th:each="map:${jobList}" th:value="${map.cnt}">
+                    <div class="ibox-content">
+                        <div class="echarts" id="echarts-line-chart2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: echarts-js"/>
+    <script th:inline="javascript">
+        $(function () {
+            // 简历入库与面试次数统计
+
+            // 月度简历入库
+            var monthCountList = [[${monthCountList}]];
+            var monthCount = new Array();
+            $.each(monthCountList[0], function(i, v){
+                monthCount.push(v);
+            });
+            // 月度面试
+            var hrIntCountList = [[${hrIntCountList}]];
+            var hrIntCount = new Array();
+            $.each(hrIntCountList[0], function(i, v){
+                hrIntCount.push(v);
+            });
+
+            var myChart = echarts.init(document.getElementById("monthCountList-echarts"));
+            var myOption = {
+                title: {
+                    // text: '简历入库与面试次数统计'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        // dataZoom: {
+                        //     yAxisIndex: 'none'
+                        // }, // 区域缩放
+                        // dataView: { readOnly: false }, // 数据视图
+                        magicType: { type: ['line', 'bar'] }, // 折线图和柱状图切换
+                        // restore: {}, // 还原
+                        saveAsImage: {} // 保存图片
+                    }
+                },
+                legend: {
+                    data:['简历数量','面试次数']
+                },
+                grid: {
+                    x: 30,
+                    x2: 40,
+                    y2: 24
+                },
+                calculable: true,
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ['01月','02月','03月','04月','05月','06月','07月','08月','09月','10月','11月','12月']
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: '简历数量',
+                        type: 'bar',
+                        color: ['#1ab394'],
+                        label: {
+                            show: true,
+                            position: 'outside'
+                        },
+                        data: monthCount,
+                    },
+                    {
+                        name: '面试次数',
+                        type: 'bar',
+                        color: ['#ed5565'],
+                        label: {
+                            show: true,
+                            position: 'outside'
+                        },
+                        data: hrIntCount,
+                    }
+                ]
+            };
+            myChart.setOption(myOption);
+
+            var source = [];
+            var cnt1 = [];
+            $(".inp5").each(function (i, eleDom) {
+                source.push(eleDom.value);
+            });
+            $(".inp6").each(function (i, eleDom) {
+                cnt1.push(eleDom.value);
+            });
+            var lineChart1 = echarts.init(document.getElementById("echarts-line-chart1"));
+            var lineoption1 = {
+                title: {
+                    text: '来源统计'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['来源统计']
+                },
+                color: ['#1ab394'],
+                grid: {
+                    x: 40,
+                    x2: 40,
+                    y2: 24
+                },
+                calculable: true,
+                xAxis: [
+                    {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: source,
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                    }
+                ],
+                series: [
+                    {
+                        type: 'line',
+                        data: cnt1,
+                    }
+                ]
+            };
+            lineChart1.setOption(lineoption1);
+
+            var jobName = [];
+            var cnt2 = [];
+            $(".inp7").each(function (i, eleDom) {
+                jobName.push(eleDom.value);
+            });
+            $(".inp8").each(function (i, eleDom) {
+                cnt2.push(eleDom.value);
+            });
+            var lineChart2 = echarts.init(document.getElementById("echarts-line-chart2"));
+            var lineoption2 = {
+                title: {
+                    text: '职位统计'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['技术统计']
+                },
+                color: ['#ed5565'],
+                grid: {
+                    x: 40,
+                    x2: 40,
+                    y2: 24
+                },
+                calculable: true,
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: jobName,
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                    }
+                ],
+                series: [
+                    {
+                        type: 'line',
+                        data: cnt2,
+                    }
+                ]
+            };
+            lineChart2.setOption(lineoption2);
+        });
+    </script>
+</body>
+</html>

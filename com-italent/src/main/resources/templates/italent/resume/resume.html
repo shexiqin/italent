@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('人才库管理列表')"/>
+    <th:block th:include="include :: bootstrap-editable-css"/>
+    <style>
+        .editable-click, a.editable-click, a.editable-click:hover {
+            border-bottom: none;
+        }
+
+        ul li.custom-jobyear input {
+            background-color: #EEEEEE;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <input type="hidden" name="params[status]" th:if="${flg != null && !#strings.equals('', flg)}"
+                       th:value="${flg}"/>
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>人事 HR：</label>
+                            <input type="text" name="fHr" placeholder="请输入HR"/>
+                        </li>
+                        <li>
+                            <label>应聘职位：</label>
+                            <input type="text" name="fJobname" placeholder="请输入应聘职位"/>
+                        </li>
+                        <li>
+                            <label>工作年限：</label>
+                            <select name="params[JobyearDic]" th:with="type=${@dict.getType('job_year')}"
+                                    style="width: 100px;">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li class="select-time custom-jobyear">
+                            <input type="number" placeholder="开始值" name="params[beginFJobyear]" disabled/>
+                            <span>-</span>
+                            <input type="number" placeholder="结束值" name="params[endFJobyear]" disabled/>
+                        </li>
+                        <li>
+                            <label>状态进度：</label>
+                            <select name="fStart" th:with="type=${@dict.getType('resume_status')}"
+                                    style="width: 100px;">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                            <span>-</span>
+                            <select name="fProgress" th:with="type=${@dict.getType('resume_progress')}"
+                                    style="width: 100px;">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>学历类型：</label>
+                            <select name="fEducationalBackground" style="width: 80px;"
+                                    th:with="type=${@dict.getType('educational_background_type')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>录取形式：</label>
+                            <select name="fEnrollType" style="width: 80px;"
+                                    th:with="type=${@dict.getType('enroll_type')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>姓名：</label>
+                            <input type="text" name="fName" placeholder="请输入姓名"/>
+                        </li>
+                        <li>
+                            <label>综合搜索：</label>
+                            <input type="text" name="fTxt" placeholder="关键字之间使用英文逗号隔开" style="width: 596px;"/>
+                        </li>
+                        <li>
+                            <label style="width: auto; text-align: left; color: red; line-height: 21px;"><i
+                                    class="fa fa-info-circle"></i> 关键字之间使用英文逗号隔开。例如：张三,本科</label>
+                        </li>
+                        <!--
+                            <li>
+                                <label>姓名：</label>
+                                <input type="text" name="fName"/>
+                            </li>
+                            <li>
+                                <label>电话：</label>
+                                <input type="text" name="fTel"/>
+                            </li>
+                            <li>
+                                <label>工作地点：</label>
+                                <input type="text" name="fRegion"/>
+                            </li>
+                            <li>
+                                <label>简历来源：</label>
+                                <select name="fSource" th:with="type=${@dict.getType('resume_from')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+
+                            <li class="select-time">
+                                <label>出生日期：</label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginFBirthday]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endFBirthday]"/>
+                            </li>
+                            <li>
+                                <label>年龄：</label>
+                                <input type="text" name="fAge"/>
+                            </li>
+                            <li>
+                                <label>工作年限：</label>
+                                <input type="text" name="fJobyear"/>
+                            </li>
+                            <li>
+                                <label>工作经验：</label>
+                                <input type="text" name="fExp"/>
+                            </li>
+                            <li>
+                                <label>之前工作的公司：</label>
+                                <input type="text" name="fCompany"/>
+                            </li>
+                            <li>
+                                <label>面试评价：</label>
+                                <input type="text" name="fAppraise"/>
+                            </li>
+                            <li>
+                                <label>基本工资：</label>
+                                <input type="text" name="fSalary"/>
+                            </li>
+                            <li>
+                                <label>其他工资：</label>
+                                <input type="text" name="fOrthersalary"/>
+                            </li>
+                            <li>
+                                <label>绩效：</label>
+                                <input type="text" name="fPerformance"/>
+                            </li>
+                            <li>
+                                <label>月度工资：</label>
+                                <input type="text" name="fMonthsalary"/>
+                            </li>
+                            <li>
+                                <label>职位级别：</label>
+                                <select name="fDegree" th:with="type=${@dict.getType('resume_level')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>标签：</label>
+                                <input type="text" name="fFlag"/>
+                            </li>
+                            <li>
+                                <label>创建时间：</label>
+                                <input type="text" class="time-input" placeholder="请选择创建时间" name="fCreatetime"/>
+                            </li>
+                        -->
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="qrcode()" shiro:hasPermission="italent:resume:add" title="应聘登记二维码"
+               th:if="${#strings.equals('reg', flg)}">
+                <i class="fa fa-qrcode"></i> 应聘登记
+            </a>
+            <a class="btn btn-success" onclick="$.operate.addFull()" shiro:hasPermission="italent:resume:add"
+               title="无简历添加" th:if="${#strings.equals(null, flg)}">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.editFull()"
+               shiro:hasPermission="italent:resume:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="italent:resume:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-info" onclick="addBatch()" shiro:hasPermission="italent:resume:add" title="简历文件批量导入"
+               th:if="${#strings.equals(null, flg)}">
+                <i class="fa fa-file"></i> 简历导入
+            </a>
+            <a class="btn btn-info" onclick="$.table.importExcel()" shiro:hasPermission="italent:resume:import"
+               title="简历Excel批量导入" th:if="${#strings.equals(null, flg)}">
+                <i class="fa fa-plus-circle"></i> 数据导入
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="italent:resume:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+            <a class="btn btn-warning" onclick="update()">
+                <i class="fa fa-download"></i>数据更新
+            </a>
+
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: bootstrap-table-editable-js"/>
+<script th:inline="javascript">
+    var downLoadFlag = [[${@permission.hasPermi('italent:resume:download')}]];
+    var editFlag = [[${@permission.hasPermi('italent:resume:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('italent:resume:remove')}]];
+    var fSexDatas = [[${@dict.getType('sys_user_sex')}]];
+    var fDegreeDatas = [[${@dict.getType('resume_level')}]];
+    var fSourceDatas = [[${@dict.getType('resume_from')}]];
+    var fStartDatas = [[${@dict.getType('resume_status')}]];
+    var fProgressDatas = [[${@dict.getType('resume_progress')}]];
+    var fEducationalBackgroundDatas = [[${@dict.getType('educational_background_type')}]];
+    var fEnrollTypeDatas = [[${@dict.getType('enroll_type')}]];
+
+
+
+    var fSexEditableDatas = new Array;
+    $.each(fSexDatas, function (i, v) {
+        fSexEditableDatas.push({value: v.dictValue, text: v.dictLabel});
+    });
+    var fStartEditableDatas = new Array;
+    $.each(fStartDatas, function (i, v) {
+        fStartEditableDatas.push({value: v.dictValue, text: v.dictLabel});
+    });
+    var fProgressEditableDatas = new Array;
+    $.each(fProgressDatas, function (i, v) {
+        fProgressEditableDatas.push({value: v.dictValue, text: v.dictLabel});
+    });
+    var fSourceDatasEditableDatas = new Array;
+    $.each(fSourceDatas, function (i, v) {
+        fSourceDatasEditableDatas.push({value: v.dictValue, text: v.dictLabel});
+    });
+    var fEducationalBackgroundEditDatas = new Array;
+    $.each(fEducationalBackgroundDatas, function (i, v) {
+        fEducationalBackgroundEditDatas.push({value: v.dictValue, text: v.dictLabel});
+    });
+    var fEnrollTypeEditDatas = new Array;
+    $.each(fEnrollTypeDatas, function (i, v) {
+        fEnrollTypeEditDatas.push({value: v.dictValue, text: v.dictLabel});
+    });
+
+    var prefix = ctx + "italent/resume";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            importUrl: prefix + "/importData",
+            importTemplateUrl: prefix + "/importTemplate",
+            modalName: "人才库信息",
+            pageSize: 50,
+            pageList: [50, 100, 200],
+            onEditableSave: onEditableSave,
+            rowStyle: function (row, index) {
+                var fTel = row.fTel;
+                if (fTel == null || fTel == '') {
+                    return {
+                        css: {
+                            "background-color": 'rgba(60, 141, 188, .2)',
+                        }
+                    };
+                }
+                return {
+                    css: {}
+                };
+            },
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'fId',
+                    title: '主键',
+                    visible: false
+                },
+                {
+                    field: 'fName',
+                    title: '姓名',
+                    width: '100px',
+                    editable: {
+                        type: 'text',
+                        title: '姓名',
+                        emptytext: "请填写"
+                    }
+                },
+                {
+                    field: 'fSex',
+                    title: '性别',
+                    sortable: true,
+                    editable: {
+                        type: 'select',
+                        title: '性别',
+                        emptytext: '请选择',
+                        source: fSexEditableDatas
+                    },
+                    /*formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(fSexDatas, value);
+                    }*/
+                },
+                {
+                    field: 'fIdcard',
+                    title: '身份证号',
+                    visible: false
+                },
+                {
+                    field: 'fBirthday',
+                    title: '出生日期',
+                    visible: false
+                },
+                {
+                    field: 'fAge',
+                    title: '年龄',
+                    visible: true,
+                    sortable: true,
+                    editable: {
+                        type: 'text',
+                        title: '年龄',
+                        emptytext: "请填写"
+                    }
+                },
+                {
+                    field: 'fTel',
+                    title: '联系电话',
+                    sortable: true,
+                    editable: {
+                        type: 'text',
+                        title: '电话',
+                        emptytext: "请填写"
+                    }
+                },
+                {
+                    field: 'fEducationalBackground',
+                    title: '学历类型',
+                    editable: {
+                        type: 'select',
+                        title: '学历类型',
+                        emptytext: '请选择',
+                        source: fEducationalBackgroundEditDatas
+                    },
+                },
+                {
+                    field: 'fEnrollType',
+                    title: '录取方式',
+                    editable: {
+                        type: 'select',
+                        title: '录取方式',
+                        emptytext: '请选择',
+                        source: fEnrollTypeEditDatas
+                    },
+                },
+                {
+                    field: 'fJobname',
+                    title: '应聘职位',
+                    sortable: true,
+                    width: '100px',
+                    editable: {
+                        type: 'text',
+                        title: '应聘职位',
+                        emptytext: "请填写"
+                    }
+                },
+                {
+                    field: 'fJobyear',
+                    title: '工作年限',
+                    editable: {
+                        type: 'number',
+                        title: '工作年限',
+                        emptytext: "请填写"
+                    }
+                },
+                {
+                    field: 'fExp',
+                    title: '工作经验',
+                    visible: true
+                },
+                {
+                    field: 'fRegion',
+                    title: '期望工作地点',
+                    visible: false
+                },
+                {
+                    field: 'fCompany',
+                    title: '之前工作的公司',
+                    visible: true,//就是这里1
+                    editable: {
+                        type: 'text',
+                        title: '之前工作的公司',
+                        emptytext: "请填写"
+                    }
+                },
+                {
+                    field: 'fTech',
+                    title: '技术栈',
+                    visible: false
+                },
+                {
+                    field: 'fJobexp',
+                    title: '工作经历',
+                    visible: true,
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value, 20, 'open');
+                    }
+                },
+                {
+                    field: 'fPrjexp',
+                    title: '项目经历',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value, 20, 'open');
+                    }
+                },
+                {
+                    field: 'fEduexp',
+                    title: '教育经历',
+                    visible: true,
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value, 20, 'open');
+                    }
+                },
+                {
+                    field: 'fLocation',
+                    title: '简历文件路径',
+                    visible: false
+                },
+                {
+                    field: 'fAppraise',
+                    title: '面试评价',
+                    visible: false
+                },
+                {
+                    field: 'fSalary',
+                    title: '基本工资',
+                    visible: false
+                },
+                {
+                    field: 'fOrthersalary',
+                    title: '其他工资',
+                    visible: false
+                },
+                {
+                    field: 'fPerformance',
+                    title: '绩效',
+                    visible: false
+                },
+                {
+                    field: 'fMonthsalary',
+                    title: '月度工资',
+                    visible: false
+                },
+                {
+                    field: 'fDegree',
+                    title: '职位级别',
+                    editable: {
+                        type: 'text',
+                        title: '职位级别',
+                        emptytext: '请填写',
+                    },
+                    /*formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(fDegreeDatas, value);
+                    }*/
+                },
+                {
+                    field: 'fHr',
+                    title: 'HR',
+                    sortable: true,
+                    editable: {
+                        type: 'text',
+                        title: 'HR',
+                        emptytext: "请填写"
+                    }
+                },
+                {
+                    field: 'fDep',
+                    title: '入职部门',
+                    editable: {
+                        type: 'text',
+                        title: '入职部门',
+                        emptytext: "请填写"
+                    }
+                },
+                {
+                    field:'edutimes',
+                    title: '毕业时间',
+                    width: "90px",//就是这里2
+                    editable: {
+                        type: 'text',
+                        title: '毕业时间',
+                        emptytext: "请填写"
+                    }
+                },
+                {
+                    field:'actions',
+                    title: '行业',//就是这里3
+                    editable: {
+                        type: 'text',
+                        title: '行业',
+                        emptytext: "请填写"
+                    }
+                },
+                {
+                    field: 'fSource',
+                    title: '简历来源',
+                    sortable: true,
+                    editable: {
+                        type: 'select',
+                        title: '简历来源',
+                        emptytext: '请选择',
+                        source: fSourceDatasEditableDatas
+                    },
+                    /*formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(fSourceDatas, value);
+                    }*/
+                },
+                {
+                    field: 'fStart',
+                    title: '简历状态',
+                    sortable: true,
+                    editable: {
+                        type: 'select',
+                        title: '简历状态',
+                        emptytext: '请选择',
+                        noEditFormatter: function (value, row, index) {
+                            // 面试进度为 未安排、面试中、面试完毕 皆可以修改简历状态
+                            if (row.fProgress == null || row.fProgress == '' || row.fProgress == '1' || row.fProgress == '2' || row.fProgress == '3') {
+                                return false;
+                                // 面试进度为 准备入职、入职成功 不可以修改简历状态
+                            } else {
+                                return $.table.selectDictLabel(fStartDatas, value);
+                            }
+                        },
+                        source: fStartEditableDatas
+                    },
+                    /*formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(fStartDatas, value);
+                    }*/
+                },
+                {
+                    field: 'fProgress',
+                    title: '进度',
+                    editable: {
+                        type: 'select',
+                        title: '进度',
+                        emptytext: '请选择',
+                        noEditFormatter: function (value, row, index) {
+                            // 成功入职之后不能在此修改状态
+                            if (value == '3' || value == '4' || value == '5' || value == '6') {
+                                return $.table.selectDictLabel(fProgressDatas, value);
+                            }
+                            // 简历状态为已邀约时，才可以修改面试进度
+                            if (row.fStart == '2') {
+                                return false;
+                            } else {
+                                return null;
+                            }
+                        },
+                        source: fProgressEditableDatas
+                    },
+                    /*formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(fProgressDatas, value);
+                    },*/
+                },
+                {
+                    field: 'fFlag',
+                    title: '标签',
+                    visible: false
+                },
+                {
+                    field: 'fTxt',
+                    title: '简历内容',
+                    visible: false,
+                    editable: {
+                        type: 'text',
+                        title: '简历自述',
+                        emptytext: "请更改"
+                    }
+
+                },
+                {
+                    field: 'fRemark',
+                    title: '备注',
+                    editable: {
+                        type: 'text',
+                        title: '备注',
+                        emptytext: "请填写"
+                    }
+                },
+                {
+                    field: 'fCreatetime',
+                    title: '创建时间',
+                    width: "90px",
+                },
+                {
+                    title: '操作',
+                    halign: 'center',
+                    align: 'right',
+                    width: "250px",
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        var moreActions = [];
+                        moreActions.push("<a class='btn btn-default btn-xs " + editFlag + "' href='javascript:void(0)' onclick='assess(" + row.fId + ")'><i class='fa fa-balance-scale'></i> 评估</a> ");
+
+                        var fLocation = row.fLocation;
+                        if (fLocation != null && fLocation != undefined && fLocation != '') {
+                            if (fLocation.endsWith(".pdf")) {
+                                actions.push('<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="review(\'' + row.fName + '\', \'' + row.fLocation + '\')"><i class="fa fa-file-pdf-o"></i> 预览</a> ');
+                            }
+                            moreActions.push("<a class='btn btn-default btn-xs " + editFlag + "' href='javascript:void(0)' onclick='updateResume(" + row.fId + ")'><i class='fa fa-upload'></i> 更新</a> ");
+                            moreActions.push("<a class='btn btn-default btn-xs " + downLoadFlag + "' href='javascript:void(0)' onclick='downloadResume(" + row.fId + ")'><i class='fa fa-download'></i> 简历下载</a> ");
+                        } else {
+                            moreActions.push("<a class='btn btn-default btn-xs " + editFlag + "' href='javascript:void(0)' onclick='updateResume(" + row.fId + ")'><i class='fa fa-upload'></i> 上传</a> ");
+                        }
+
+
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editFull(\'' + row.fId + '\')"><i class="fa fa-edit"></i> 编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.fId + '\')"><i class="fa fa-remove"></i> 删除</a> ');
+                        actions.push('<a tabindex="0" class="btn btn-info btn-xs" role="button" data-container="body" data-placement="left" data-toggle="popover" data-html="true" data-trigger="hover" data-content="' + moreActions.join('') + '"><i class="fa fa-chevron-circle-right"></i>更多</a>');
+
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+
+
+        $("select[name='params[JobyearDic]']").change(function () {
+            var val = $(this).val();
+            if (val == '5') {
+                $("ul li.custom-jobyear input").prop("disabled", "");
+                $("ul li.custom-jobyear input").css("background-color", "#ffffff");
+                $("ul li.custom-jobyear input:eq(0)").focus();
+            } else {
+                $("ul li.custom-jobyear input").prop("disabled", "disabled");
+                $("ul li.custom-jobyear input").css("background-color", "#EEEEEE");
+            }
+        });
+    });
+
+    function onEditableSave(field, row, rowIndex, oldValue, $el) {
+        // alert("字段名：" + field + "，当前值：" + row[field]  + "，旧值：" + oldValue);
+        var data = {};
+        data.fId = row['fId'];
+        data[field] = row[field];
+        $.operate.post(prefix + '/edit', data);
+    }
+    function refresh() {
+        $("#bootstrap-table").bootstrapTable('refresh');
+    }
+    /**
+     *  打开批量上传
+     */
+    function addBatch() {
+        $.modal.openFull("批量导入简历", prefix + '/addBatch', 1400, 700);
+    }
+    function downloadResume(id) {
+        location.href = prefix + "/download?fId=" + id;
+    }
+    /**
+     * 预览简历
+     * @param url
+     */
+    function review(name, url) {
+        $.modal.openTab('预览简历【' + name + '】', url);
+    }
+    /**
+     * 上传简历
+     * @param id
+     */
+    function updateResume(id) {
+        $.modal.open("上传简历", prefix + '/upload/' + id, 800, 650);
+    }
+    /**
+     * 评估
+     * @param id
+     */
+    function assess(id) {
+        $.modal.open("评估", prefix + '/assess/' + id, 1300, 700);
+    }
+
+
+
+    function update() {
+        $.operate.post(prefix + '/update', function(data){
+        });
+    }
+
+
+</script>
+</body>
+<!-- 导入区域 -->
+<script id="importTpl" type="text/template">
+    <form enctype="multipart/form-data" class="mt20 mb10">
+        <div class="col-xs-offset-1">
+            <input type="file" id="file" name="file"/>
+            <div class="mt10 pt5">
+                <!--<input type="checkbox" id="updateSupport" name="updateSupport" title="如果登录账户已经存在，更新这条数据。"> 是否更新已经存在的用户数据-->
+                &nbsp; <a onclick="$.table.importTemplate()" class="btn btn-default btn-xs"><i
+                    class="fa fa-file-excel-o"></i> 下载模板</a>
+            </div>
+            <font color="red" class="pull-left mt10">
+                提示：仅允许导入“xls”或“xlsx”格式文件！
+            </font>
+        </div>
+    </form>
+
+</script>
+</html>

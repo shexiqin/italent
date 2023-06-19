@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+
+<head>
+    <th:block th:include="include :: header('统计')" />
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>柱状图</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">选项1</a>
+                            </li>
+                            <li><a href="#">选项2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="echarts-bar-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>饼状图</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-wrench"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="#">学信网</a>
+                        </li>
+                        <li><a href="#">民教网</a>
+                        </li>
+                    </ul>
+                    <a class="close-link">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="echarts" id="echarts-pie-chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<!--引入图标的脚本-->
+<th:block th:include="include :: echarts-js" />
+<script th:inline="javascript">
+    $(function () {
+        // 选择dom的组件进行图标的初始化
+        var barChart = echarts.init(document.getElementById("echarts-bar-chart"));
+        // 构建图标的配置项
+        var baroption = {
+            // 图标标题
+            title : {
+                text: '性别的统计'
+            },
+            // 提示工具
+            tooltip : {
+                // 以某种形式触发
+                trigger: 'axis'
+            },
+            // 体例
+            legend: {
+                data:['男','女']
+            },
+            // 控制图标的坐标
+            grid:{
+                x:30,
+                x2:40,
+                y2:24
+            },
+            calculable : true,
+            // X轴
+            xAxis : [
+                {
+                    // 轴的类型
+                    type : 'category',
+
+                    data : [[${list}]]
+                }
+            ],
+            // Y轴
+            yAxis : [
+                {
+                    type : 'value'//数值
+                }
+            ],
+            // X轴里的分类
+            series : [
+                {
+
+                    name:'男',//系列的名字
+                    type:'bar',//系类的类型line折线图
+                    data: [[${manlist}]],
+
+                },
+                {
+                    name:'女',
+                    type:'bar',
+                    data:[[${womanlist}]],
+                }
+            ]
+        };
+        barChart.setOption(baroption);
+        window.onresize = barChart.resize;
+
+        var pieChart = echarts.init(document.getElementById("echarts-pie-chart"));
+        var pieoption = {
+            title : {
+                text: '简历学历来源',
+                subtext: '实时更新',
+                x:'center'
+            },
+            tooltip : {
+                trigger: 'item',
+             //  formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            legend: {
+                orient : 'vertical',
+                x : 'left',
+                data:['学信网','民教网']
+            },
+            calculable : true,
+            series : [
+                {
+                    name:'访问来源',
+                    type:'pie',
+                    radius : '55%',
+                    center: ['50%', '60%'],
+                    data:[
+                        {value:[[${num[0]}]], name:'民教网'},
+                        {value:[[${num[1]}]], name:'学信网'}
+                    ]
+                }
+            ]
+        };
+        pieChart.setOption(pieoption);
+        $(window).resize(pieChart.resize);
+
+    });
+</script>
+</body>
+</html>

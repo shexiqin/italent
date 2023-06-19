@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增企业档案')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+    <th:block th:include="include :: select2-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-enterprise-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">公司名称：</label>
+                <div class="col-sm-8">
+                    <input name="fName" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">行业：</label>
+                <div class="col-sm-8">
+                    <select name="fIndustry" class="form-control m-b select2-multiple" multiple th:with="type=${@dict.getType('trade_classify')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">公司描述：</label>
+                <div class="col-sm-8">
+                    <textarea name="fDescribe" class="form-control"></textarea>
+                </div>
+            </div>
+            <!--<div class="form-group">
+                <label class="col-sm-3 control-label">公司规模：</label>
+                <div class="col-sm-8">
+                    <input name="fSize" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">详细位置：</label>
+                <div class="col-sm-8">
+                    <input name="fAddress" class="form-control" type="text">
+                </div>
+            </div>-->
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">Logo：</label>
+                <div class="col-sm-8">
+                    <input type="hidden" name="fLogo">
+                    <div class="file-loading">
+                        <input class="form-control file-upload" id="fLogo" name="file" type="file">
+                    </div>
+                </div>
+            </div>
+            <!--<div class="form-group">
+                <label class="col-sm-3 control-label">HR邮箱：</label>
+                <div class="col-sm-8">
+                    <input name="fHrEmail" class="form-control" type="text">
+                </div>
+            </div>-->
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <input name="fRemark" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: bootstrap-fileinput-js"/>
+    <th:block th:include="include :: select2-js" />
+    <script th:inline="javascript">
+        var prefix = ctx + "italent/enterprise"
+        $("#form-enterprise-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-enterprise-add').serialize());
+            }
+        }
+
+        $("input[name='fCreateTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='fUpdateTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $(".file-upload").fileinput({
+            uploadUrl: ctx + 'common/upload',
+            maxFileCount: 1,
+            autoReplace: true,
+            uploadExtraData:{
+                subDir: '/company/logo' // 这里是上传文件携带的其他参数，默认情况下只支持固定参数
+            }
+        }).on('fileuploaded', function (event, data, previewId, index) {
+            $("input[name='" + event.currentTarget.id + "']").val(data.response.url)
+        }).on('fileremoved', function (event, id, index) {
+            $("input[name='" + event.currentTarget.id + "']").val('')
+        })
+    </script>
+</body>
+</html>

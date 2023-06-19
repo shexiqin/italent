@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.italent.mapper.TbitalentFamilyInfoMapper">
+    
+    <resultMap type="TbitalentFamilyInfo" id="TbitalentFamilyInfoResult">
+        <result property="fId"    column="f_id"    />
+        <result property="fResumeId"    column="f_resume_id"    />
+        <result property="fName"    column="f_name"    />
+        <result property="fRelation"    column="f_relation"    />
+        <result property="fAge"    column="f_age"    />
+        <result property="fCompany"    column="f_company"    />
+        <result property="fPost"    column="f_post"    />
+        <result property="fTel"    column="f_tel"    />
+    </resultMap>
+
+    <sql id="selectTbitalentFamilyInfoVo">
+        select f_id, f_resume_id, f_name, f_relation, f_age, f_company, f_post, f_tel from tbitalent_family_info
+    </sql>
+
+    <select id="selectTbitalentFamilyInfoList" parameterType="TbitalentFamilyInfo" resultMap="TbitalentFamilyInfoResult">
+        <include refid="selectTbitalentFamilyInfoVo"/>
+        <where>  
+            <if test="fResumeId != null  and fResumeId != ''"> and f_resume_id = #{fResumeId}</if>
+            <if test="fName != null  and fName != ''"> and f_name like concat('%', #{fName}, '%')</if>
+            <if test="fRelation != null  and fRelation != ''"> and f_relation = #{fRelation}</if>
+            <if test="fAge != null  and fAge != ''"> and f_age = #{fAge}</if>
+            <if test="fCompany != null  and fCompany != ''"> and f_company = #{fCompany}</if>
+            <if test="fPost != null  and fPost != ''"> and f_post = #{fPost}</if>
+            <if test="fTel != null  and fTel != ''"> and f_tel = #{fTel}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbitalentFamilyInfoByFId" parameterType="Long" resultMap="TbitalentFamilyInfoResult">
+        <include refid="selectTbitalentFamilyInfoVo"/>
+        where f_id = #{fId}
+    </select>
+        
+    <insert id="insertTbitalentFamilyInfo" parameterType="TbitalentFamilyInfo" useGeneratedKeys="true" keyProperty="fId">
+        insert into tbitalent_family_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fResumeId != null and fResumeId != ''">f_resume_id,</if>
+            <if test="fName != null">f_name,</if>
+            <if test="fRelation != null">f_relation,</if>
+            <if test="fAge != null">f_age,</if>
+            <if test="fCompany != null">f_company,</if>
+            <if test="fPost != null">f_post,</if>
+            <if test="fTel != null">f_tel,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fResumeId != null and fResumeId != ''">#{fResumeId},</if>
+            <if test="fName != null">#{fName},</if>
+            <if test="fRelation != null">#{fRelation},</if>
+            <if test="fAge != null">#{fAge},</if>
+            <if test="fCompany != null">#{fCompany},</if>
+            <if test="fPost != null">#{fPost},</if>
+            <if test="fTel != null">#{fTel},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbitalentFamilyInfo" parameterType="TbitalentFamilyInfo">
+        update tbitalent_family_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fResumeId != null and fResumeId != ''">f_resume_id = #{fResumeId},</if>
+            <if test="fName != null">f_name = #{fName},</if>
+            <if test="fRelation != null">f_relation = #{fRelation},</if>
+            <if test="fAge != null">f_age = #{fAge},</if>
+            <if test="fCompany != null">f_company = #{fCompany},</if>
+            <if test="fPost != null">f_post = #{fPost},</if>
+            <if test="fTel != null">f_tel = #{fTel},</if>
+        </trim>
+        where f_id = #{fId}
+    </update>
+
+    <delete id="deleteTbitalentFamilyInfoByFId" parameterType="Long">
+        delete from tbitalent_family_info where f_id = #{fId}
+    </delete>
+
+    <delete id="deleteTbitalentFamilyInfoByFIds" parameterType="String">
+        delete from tbitalent_family_info where f_id in 
+        <foreach item="fId" collection="array" open="(" separator="," close=")">
+            #{fId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteTbitalentFamilyInfoByResumeId">
+        delete from tbitalent_family_info where f_resume_id = #{fResumeId}
+    </delete>
+
+</mapper>

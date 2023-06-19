@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('问卷列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <input type="hidden" name="template" th:value="${template}">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>问卷标题：</label>
+                                <input type="text" name="title"/>
+                            </li>
+                            <!--<li class="select-time">
+                                <label>开始时间：</label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginStartTime]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endStartTime]"/>
+                            </li>-->
+                            <li>
+                                <label>发布状态：</label>
+                                <select name="status" th:with="type=${@dict.getType('publish_status')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>创建者：</label>
+                                <input type="text" name="createUser"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="questionnaire:naire:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="questionnaire:naire:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="questionnaire:naire:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="questionnaire:naire:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+
+        var template = [[${template}]];
+
+        var editFlag = [[${@permission.hasPermi('questionnaire:naire:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('questionnaire:naire:remove')}]];
+        var prefix = ctx + "questionnaire/naire";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "问卷",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'id',
+                    title: 'ID',
+                    visible: false
+                },
+                {
+                    field: 'title',
+                    title: '问卷标题'
+                },
+                {
+                    field: 'startTime',
+                    title: '开始时间',
+                    visible: false
+                },
+                {
+                    field: 'endTime',
+                    title: '结束时间',
+                    visible: false
+                },
+                {
+                    field: 'doCount',
+                    title: '回答次数'
+                },
+                {
+                    field: 'anonymous',
+                    title: '匿名状态',
+                },
+                {
+                    field: 'status',
+                    title: '发布状态',
+                    formatter: function(value, row, index) {
+                        return statusTools(row);
+                    }
+                },
+                {
+                    field: 'template',
+                    title: '模板标识',
+                    visible: false
+                },
+                {
+                    field: 'createUser',
+                    title: '创建者'
+                },
+                {
+                    field: 'remark',
+                    title: '备注'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        if([[${template}]] == 1){
+                            actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="qrCode(\'' + row.id + '\')"><i class="fa fa-qrcode"></i> 分享</a> ');
+                        }
+                        if([[${template}]] == 2){
+                            actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="copy(\'' + row.id + '\')"><i class="fa fa-copy"></i> 拷贝</a> ');
+                        }
+                        actions.push('<a class="btn btn-info btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="addDetail(\'' + row.id + '\',\''+ row.status +'\')"><i class="fa fa-paint-brush"></i> 构建</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="edit(\'' + row.id + '\',\''+ row.status +'\')"><i class="fa fa-edit"></i> 编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="remove(\'' + row.id + '\',\''+ row.status +'\')"><i class="fa fa-remove"></i> 删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        /**
+         * 构建二维码
+         * @param id
+         */
+        function qrCode(id){
+            $.modal.open('问卷二维码', prefix + '/qrcode/' + id);
+        }
+
+        /**
+         * 给指定的问卷添加题目
+         * @param id
+         */
+        function addDetail(id, status){
+            if(status == 2){
+                $.modal.alert("问卷已经发布，暂不能构建！");
+                return;
+            }
+            $.modal.openTab('<i class="fa fa-filter" style="color: #23508e;"></i> 构建问卷', '/questionnaire/details/add/' + id);
+        }
+
+        /**
+         * 给指定的问卷添加题目
+         * @param id
+         */
+        function edit(id, status){
+            if(status == 2){
+                $.modal.alert("问卷已经发布，暂不能编辑！");
+                return;
+            }
+            $.operate.edit(id);
+        }
+
+        /**
+         * 给指定的问卷添加题目
+         * @param id
+         */
+        function remove(id, status){
+            if(status == 2){
+                $.modal.alert("问卷已经发布，暂不能删除！");
+                return;
+            }
+            $.operate.remove(id);
+        }
+
+        /* 发布状态显示 */
+        function statusTools(row) {
+            if (row.status == 1) {
+                return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="enable(\'' + row.id + '\')"></i> ';
+            } else {
+                return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="disable(\'' + row.id + '\')"></i> ';
+            }
+        }
+
+        /* 发布状态-停用 */
+        function disable(id) {
+            $.modal.confirm("确认要停用问卷吗？", function() {
+                $.operate.post(prefix + "/changeStatus", { "id": id, "status": 1 });
+            })
+        }
+
+        /* 发布状态-启用 */
+        function enable(id) {
+            $.modal.confirm("确认要启用问卷吗？", function() {
+                $.operate.post(prefix + "/changeStatus", { "id": id, "status": 2 });
+            })
+        }
+
+        function copy(id){
+            $.modal.confirm("确认要拷贝问卷吗？", function() {
+                $.operate.post(prefix + "/copy", { "id": id}, function(data){
+                    console.log("aaa", data);
+                    if(data.code == 0){
+                        $.modal.openTab('我的问卷', prefix + "/1", true);
+                    }
+                });
+            })
+        }
+    </script>
+</body>
+</html>

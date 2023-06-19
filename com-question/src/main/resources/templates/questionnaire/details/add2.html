@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增问卷详情')" />
+    <th:block th:include="include :: summernote-css" />
+    <style>
+        .title{
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .que_box{
+            margin: 20px 0;
+        }
+        .que_box .que{
+            margin: 0 0 20px 0;
+            overflow: auto;
+        }
+
+        .que_box .que .break{
+            white-space: normal;
+            word-break:break-all;
+        }
+
+        .save{
+            width: 100%;
+            margin-bottom: 50px;
+        }
+
+        .q-num{
+            background-color: #efefef;
+            font-weight: bold;
+        }
+        .q-add{
+            background-color: #21b9bb;
+            color: white;
+        }
+        .q-del{
+            background-color: #ec4758;
+            color: white;
+        }
+        .q-opt{
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body class="white-bg">
+<form id="form-details-add">
+    <input type="hidden" id="id" name="params[id]" th:value="${tbqueNaire.id}">
+    <input type="hidden" id="result" name="params[result]">
+</form>
+<div class="row">
+    <div class="col-xs-10 col-xs-offset-1">
+        <div class="col-xs-12 title" th:object="${tbqueNaire}">
+            <h1 th:text="*{title}">问卷标题xxxxxx</h1>
+            <p th:text="*{remark}">问卷的备注信息</p>
+        </div>
+        <div class="col-xs-12 title">
+            <button onclick="addItem(1)" class="btn btn-primary"><i class="fa fa-plus"></i> 单选</button>
+            <button onclick="addItem(2)" class="btn btn-info"><i class="fa fa-plus"></i> 多选</button>
+            <button onclick="addItem(3)" class="btn btn-success"><i class="fa fa-plus"></i> 判断</button>
+            <button onclick="addItem(4)" class="btn btn-warning"><i class="fa fa-plus"></i> 问答</button>
+            <button onclick="addItem(5)" class="btn btn-danger"><i class="fa fa-plus"></i> 下拉</button>
+        </div>
+        <div class="col-xs-12 que_box">
+            <div class="que" th:each="naireDetail,status:${list}" th:attr="q-type=${naireDetail.queType}">
+                <div class="form-group">
+                    <div class="input-group title">
+                        <div class="input-group-addon q-num" th:if="${naireDetail.queType == '1'}">单选 <span th:text="${status.count}">2</span></div>
+                        <div class="input-group-addon q-num" th:if="${naireDetail.queType == '2'}">多选 <span th:text="${status.count}">2</span></div>
+                        <div class="input-group-addon q-num" th:if="${naireDetail.queType == '3'}">判断 <span th:text="${status.count}">2</span></div>
+                        <div class="input-group-addon q-num" th:if="${naireDetail.queType == '4'}">问答 <span th:text="${status.count}">2</span></div>
+                        <div class="input-group-addon q-num" th:if="${naireDetail.queType == '5'}">下拉 <span th:text="${status.count}">2</span></div>
+
+                        <input type="text" class="form-control q-title" placeholder="请输入题目..." th:value="${naireDetail.params.title}">
+                        <div class="input-group-addon btn btn-info q-add" onclick="addEl(this, this.parentNode.parentNode);"><i class="fa fa-plus"></i> </div>
+                        <div class="input-group-addon btn btn-danger q-del" onclick="delEl(this, '1')"><i class="fa fa-remove"></i></div>
+                    </div>
+                    <div class="input-group q-opt" th:each="opt,stat:${naireDetail.params.opts}">
+                        <div class="input-group-addon q-num" th:text="${#conversions.convert(stat.index + 65, 'java.lang.Character')}"> A </div>
+                        <input type="text" class="form-control q-opt-item" placeholder="请输入选项..." th:value="${opt}">
+                        <div class="input-group-addon btn btn-danger q-del" onclick="delEl(this, '2', this.parentNode.parentNode)"><i class="fa fa-remove"></i></div>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <div className="checkbox" style="float: right;">
+                        <label>
+                            <input type="checkbox" class="q-is-required" value="1" th:if="${naireDetail.required == '1'}" checked>
+                            <input type="checkbox" class="q-is-required" value="1" th:if="${naireDetail.required != '1'}">
+                            设为必填！
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <a href="javascript:void(0)" class="btn btn-success save" onclick="submitHandler()">保存</a>
+        </div>
+    </div>
+</div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: summernote-js" />
+    <script th:inline="javascript">
+
+        function delEl(obj, level, pObj){
+            if(level == '1'){
+                $(obj).parent().parent().parent().remove();
+                flushQueNum();
+            } else if(level == '2'){
+                $(obj).parent().remove();
+                flushOptNum(pObj);
+            }
+        }
+
+        function addEl(obj, pObj){
+            var html = '<div class="input-group q-opt">\n' +
+                '           <div class="input-group-addon q-num"> A </div>\n' +
+                '           <input type="text" class="form-control q-opt-item" placeholder="请输入选项...">\n' +
+                '           <div class="input-group-addon btn btn-danger q-del" onclick="delEl(this, \'2\', this.parentNode.parentNode)"><i class="fa fa-remove"></i></div>\n' +
+                '       </div>';
+            $(obj).parent().parent().append(html);
+            flushOptNum(pObj);
+        }
+
+        function flushOptNum(obj){
+            var array = $(obj).find('.q-opt .q-num');
+            for(let i = 0; i < array.length; i++){
+                $(array[i]).text(String.fromCharCode(65 + i));
+            }
+        }
+
+        function flushQueNum(){
+            var array = $(".title .q-num span");
+            for(let i = 0; i < array.length; i++){
+                $(array[i]).text(i + 1);
+            }
+        }
+
+        function addItem(type){
+            // 单选
+            let html = '';
+            let typeText = '';
+            if(type == 1 || type == 2 || type == 3 || type == 5){
+                switch (type) {
+                    case 1:
+                        typeText = '单选';
+                        break;
+                    case 2:
+                        typeText = '多选';
+                        break;
+                    case 3:
+                        typeText = '判断';
+                        break;
+                    case 5:
+                        typeText = '下拉';
+                        break;
+                }
+                html = '<div class="que" q-type="' + type + '">\n' +
+                    '       <div class="form-group">\n' +
+                    '           <div class="input-group title">\n' +
+                    '               <div class="input-group-addon q-num">' + typeText + ' <span>2</span></div>\n' +
+                    '               <input type="text" class="form-control q-title" placeholder="请输入题目...">\n' +
+                    '               <div class="input-group-addon btn btn-info q-add" onclick="addEl(this, this.parentNode.parentNode);"><i class="fa fa-plus"></i> </div>\n' +
+                    '               <div class="input-group-addon btn btn-danger q-del" onclick="delEl(this, \'1\')"><i class="fa fa-remove"></i></div>\n' +
+                    '           </div>\n' +
+                    '           <div class="input-group q-opt">\n' +
+                    '               <div class="input-group-addon q-num"> A </div>\n' +
+                    '               <input type="text" class="form-control q-opt-item" placeholder="请输入选项...">\n' +
+                    '               <div class="input-group-addon btn btn-danger q-del" onclick="delEl(this, \'2\', this.parentNode.parentNode)"><i class="fa fa-remove"></i></div>\n' +
+                    '           </div>\n' +
+                    '           <div class="input-group q-opt">\n' +
+                    '               <div class="input-group-addon q-num"> B </div>\n' +
+                    '               <input type="text" class="form-control q-opt-item" placeholder="请输入选项...">\n' +
+                    '               <div class="input-group-addon btn btn-danger q-del" onclick="delEl(this, \'2\', this.parentNode.parentNode)"><i class="fa fa-remove"></i></div>\n' +
+                    '           </div>\n' +
+                    '       </div>\n' +
+                    '       <div className="form-group">\n' +
+                    '           <div className="checkbox" style="float: right;">\n' +
+                    '               <label>\n' +
+                    '                   <input type="checkbox" class="q-is-required" value="1"> 设为必填！\n' +
+                    '               </label>\n' +
+                    '           </div>\n' +
+                    '       </div>\n' +
+                    '   </div>'
+            }
+
+            if(type == 4){
+                html = '<div class="que" q-type="' + type + '">\n' +
+                    '       <div class="form-group">\n' +
+                    '           <div class="input-group title">\n' +
+                    '               <div class="input-group-addon q-num">问答 <span>1</span></div>\n' +
+                    '               <input type="text" class="form-control q-title" placeholder="请输入题目...">\n' +
+                    '               <div class="input-group-addon btn btn-danger q-del" onclick="delEl(this, \'1\')"><i class="fa fa-remove"></i></div>\n' +
+                    '           </div>\n' +
+                    '       </div>\n' +
+                    '       <div className="form-group">\n' +
+                    '           <div className="checkbox" style="float: right;">\n' +
+                    '               <label>\n' +
+                    '                   <input type="checkbox" class="q-is-required" value="1"> 设为必填！\n' +
+                    '               </label>\n' +
+                    '           </div>\n' +
+                    '       </div>\n' +
+                    '   </div>';
+            }
+            $(".que_box").append(html);
+            flushQueNum();
+        }
+
+        var prefix = ctx + "questionnaire/details"
+        $("#form-details-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+
+            var array = $(".que_box .que");
+
+            var jsonArray = new Array();
+
+            for(let i = 0; i < array.length; i++){
+                // 单题目的JSON 对象
+                var obj = {};
+
+                // 每个题目容器
+                var que = array[i];
+
+                // 题目类型
+                var type = $(que).attr('q-type');
+                // 题目题干
+                var title = $(que).find(".q-title").val();
+                // 是否必填
+                var required = $(que).find(".q-is-required:checked").val();
+                // 题目选项
+                var opts = $(que).find(".q-opt-item");
+                var optArray = new Array();
+
+                for(let j = 0 ; j < opts.length; j++){
+                    var opt = opts[j].value;
+                    optArray.push(opt);
+                }
+
+                // 对象中封装题目内容
+                obj.type = type;
+                obj.required = required;
+                obj.title = title;
+                obj.opts = optArray;
+
+                jsonArray.push(obj)
+            }
+
+            $("#result").val(JSON.stringify(jsonArray));
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-details-add').serialize(), function(data){
+                    if(data.code == 0){
+                        $.modal.closeTab();
+                    }
+                });
+            }
+        }
+
+        $(function() {
+            $('.summernote').summernote({
+                lang: 'zh-CN',
+                dialogsInBody: true,
+                callbacks: {
+                    onChange: function(contents, $edittable) {
+                        $("input[name='" + this.id + "']").val(contents);
+                    },
+                    onImageUpload: function(files) {
+                        var obj = this;
+                    	var data = new FormData();
+                    	data.append("file", files[0]);
+                    	$.ajax({
+                            type: "post",
+                            url: ctx + "common/upload",
+                    		data: data,
+                    		cache: false,
+                    		contentType: false,
+                    		processData: false,
+                    		dataType: 'json',
+                    		success: function(result) {
+                    		    if (result.code == web_status.SUCCESS) {
+                    		        $('#' + obj.id).summernote('insertImage', result.url);
+                    		    } else {
+                    		        $.modal.alertError(result.msg);
+                    		    }
+                    		},
+                    		error: function(error) {
+                    		    $.modal.alertWarning("图片上传失败。");
+                    		}
+                    	});
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

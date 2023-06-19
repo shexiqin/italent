@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改人才库管理')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+    <th:block th:include="include :: summernote-css" />
+</head>
+<body class="white-bg">
+    <div class="main-content">
+        <form class="form-horizontal m" id="form-resume-edit" th:object="${tbitalentResume}">
+            <input name="fId" th:field="*{fId}" type="hidden">
+            <input name="fAppraise" th:field="*{fAppraise}" type="hidden">
+            <h4 class="form-header h4">面试评价</h4>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">沟通表达能力：</label>
+                        <div class="col-sm-8">
+                            <div class="radio-group">
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass1]" value="优秀"> 优秀
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass1]" value="良好"> 良好
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass1]" value="一般"> 一般
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass1]" value="较差"> 较差
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">上进心、成功欲望：</label>
+                        <div class="col-sm-8">
+                            <div class="radio-group">
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass2]" value="优秀"> 优秀
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass2]" value="良好"> 良好
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass2]" value="一般"> 一般
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass2]" value="较差"> 较差
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">思考及应变能力：</label>
+                        <div class="col-sm-8">
+                            <div class="radio-group">
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass3]" value="优秀"> 优秀
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass3]" value="良好"> 良好
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass3]" value="一般"> 一般
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass3]" value="较差"> 较差
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">创新力：</label>
+                        <div class="col-sm-8">
+                            <div class="radio-group">
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass4]" value="优秀"> 优秀
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass4]" value="良好"> 良好
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass4]" value="一般"> 一般
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass4]" value="较差"> 较差
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">组织协调、团队合作：</label>
+                        <div class="col-sm-8">
+                            <div class="radio-group">
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass5]" value="优秀"> 优秀
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass5]" value="良好"> 良好
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass5]" value="一般"> 一般
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass5]" value="较差"> 较差
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">职业形象：</label>
+                        <div class="col-sm-8">
+                            <div class="radio-group">
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass6]" value="优秀"> 优秀
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass6]" value="良好"> 良好
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass6]" value="一般"> 一般
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass6]" value="较差"> 较差
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">工作态度：</label>
+                        <div class="col-sm-8">
+                            <div class="radio-group">
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass7]" value="优秀"> 优秀
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass7]" value="良好"> 良好
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass7]" value="一般"> 一般
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass7]" value="较差"> 较差
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">管理能力：</label>
+                        <div class="col-sm-8">
+                            <div class="radio-group">
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass8]" value="优秀"> 优秀
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass8]" value="良好"> 良好
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass8]" value="一般"> 一般
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass8]" value="较差"> 较差
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">进入下一轮：</label>
+                        <div class="col-sm-8">
+                            <div class="radio-group">
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass9]" value="是"> 同意
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass9]" value="否"> 淘汰
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="params[ass9]" value="待定"> 待定
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4 class="form-header h4">综合评价</h4>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <textarea class="form-control" rows="3" name="params[ass10]" placeholder="综合评价..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4 class="form-header h4">背景调查</h4>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <textarea class="form-control" rows="3" name="params[ass11]" placeholder="背景调查..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: bootstrap-fileinput-js"/>
+    <th:block th:include="include :: summernote-js" />
+    <script th:inline="javascript">
+        var prefix = ctx + "italent/resume";
+        var fAppraise = [[${tbitalentResume.fAppraise}]];
+
+        $(function(){
+            if(fAppraise != null){
+                var jsonObj = JSON.parse(fAppraise);
+                console.log(jsonObj);
+
+                $.each(jsonObj, function(i, v){
+                    console.log(i, v, $("input[name='params[" + i + "]'][value='"+v+"']"));
+                    $("input[name='params[" + i + "]'][value='"+v+"']").prop("checked", "checked")
+                    $("textarea[name='params[" + i + "]']").text(v)
+                });
+            }
+        });
+
+        $("#form-resume-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-resume-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

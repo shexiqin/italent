@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.italent.mapper.TbitalentEduHistoryMapper">
+    
+    <resultMap type="TbitalentEduHistory" id="TbitalentEduHistoryResult">
+        <result property="fId"    column="f_id"    />
+        <result property="fResumeId"    column="f_resume_id"    />
+        <result property="fStartTime"    column="f_start_time"    />
+        <result property="fEndTime"    column="f_end_time"    />
+        <result property="fSchool"    column="f_school"    />
+        <result property="fMajor"    column="f_major"    />
+        <result property="fEduDegree"    column="f_edu_degree"    />
+        <result property="fEduBackground"    column="f_edu_background"    />
+        <result property="fType"    column="f_type"    />
+    </resultMap>
+
+    <sql id="selectTbitalentEduHistoryVo">
+        select f_id, f_resume_id, f_start_time, f_end_time, f_school, f_major, f_edu_degree,f_edu_background, f_type from tbitalent_edu_history
+    </sql>
+
+    <select id="selectTbitalentEduHistoryList" parameterType="TbitalentEduHistory" resultMap="TbitalentEduHistoryResult">
+        <include refid="selectTbitalentEduHistoryVo"/>
+        <where>  
+            <if test="fResumeId != null  and fResumeId != ''"> and f_resume_id = #{fResumeId}</if>
+            <if test="fStartTime != null  and fStartTime != ''"> and f_start_time = #{fStartTime}</if>
+            <if test="fEndTime != null  and fEndTime != ''"> and f_end_time = #{fEndTime}</if>
+            <if test="fSchool != null  and fSchool != ''"> and f_school like concat('%', #{fSchool}, '%')</if>
+            <if test="fMajor != null  and fMajor != ''"> and f_major like concat('%', #{fMajor}, '%')</if>
+            <if test="fEduDegree != null  and fEduDegree != ''"> and f_edu_degree = #{fEduDegree}</if>
+            <if test="fEduBackground != null  and fEduBackground != ''"> and f_edu_background = #{fEduBackground}</if>
+            <if test="fType != null  and fType != ''"> and f_type = #{fType}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbitalentEduHistoryByFId" parameterType="Long" resultMap="TbitalentEduHistoryResult">
+        <include refid="selectTbitalentEduHistoryVo"/>
+        where f_id = #{fId}
+    </select>
+        
+    <insert id="insertTbitalentEduHistory" parameterType="TbitalentEduHistory" useGeneratedKeys="true" keyProperty="fId">
+        insert into tbitalent_edu_history
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fResumeId != null and fResumeId != ''">f_resume_id,</if>
+            <if test="fStartTime != null and fStartTime != ''">f_start_time,</if>
+            <if test="fEndTime != null and fEndTime != ''">f_end_time,</if>
+            <if test="fSchool != null and fSchool != ''">f_school,</if>
+            <if test="fMajor != null and fMajor != ''">f_major,</if>
+            <if test="fEduDegree != null and fEduDegree != ''">f_edu_degree,</if>
+            <if test="fEduBackground != null and fEduBackground != ''">f_edu_background,</if>
+            <if test="fType != null and fType != ''">f_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fResumeId != null and fResumeId != ''">#{fResumeId},</if>
+            <if test="fStartTime != null and fStartTime != ''">#{fStartTime},</if>
+            <if test="fEndTime != null and fEndTime != ''">#{fEndTime},</if>
+            <if test="fSchool != null and fSchool != ''">#{fSchool},</if>
+            <if test="fMajor != null and fMajor != ''">#{fMajor},</if>
+            <if test="fEduDegree != null and fEduDegree != ''">#{fEduDegree},</if>
+            <if test="fEduBackground != null and fEduBackground != ''">#{fEduBackground},</if>
+            <if test="fType != null and fType != ''">#{fType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbitalentEduHistory" parameterType="TbitalentEduHistory">
+        update tbitalent_edu_history
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fResumeId != null and fResumeId != ''">f_resume_id = #{fResumeId},</if>
+            <if test="fStartTime != null and fStartTime != ''">f_start_time = #{fStartTime},</if>
+            <if test="fEndTime != null and fEndTime != ''">f_end_time = #{fEndTime},</if>
+            <if test="fSchool != null and fSchool != ''">f_school = #{fSchool},</if>
+            <if test="fMajor != null and fMajor != ''">f_major = #{fMajor},</if>
+            <if test="fEduDegree != null and fEduDegree != ''">f_edu_degree = #{fEduDegree},</if>
+            <if test="fEduBackground != null and fEduBackground != ''">f_edu_background = #{fEduBackground},</if>
+            <if test="fType != null and fType != ''">f_type = #{fType},</if>
+        </trim>
+        where f_id = #{fId}
+    </update>
+
+    <delete id="deleteTbitalentEduHistoryByFId" parameterType="Long">
+        delete from tbitalent_edu_history where f_id = #{fId}
+    </delete>
+
+    <delete id="deleteTbitalentEduHistoryByFIds" parameterType="String">
+        delete from tbitalent_edu_history where f_id in 
+        <foreach item="fId" collection="array" open="(" separator="," close=")">
+            #{fId}
+        </foreach>
+    </delete>
+    <delete id="deleteTbitalentEduHistoryByResumeId">
+        delete from tbitalent_edu_history where f_resume_id = #{fResumeId}
+    </delete>
+
+</mapper>

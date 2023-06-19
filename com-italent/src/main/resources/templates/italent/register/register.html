@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('应聘登记列表')" />
+    <style>
+        .detail-view .bootstrap-table.bootstrap3{
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>应聘职位：</label>
+                                <input type="text" name="fJobname"/>
+                            </li>
+                            <li>
+                                <label>姓名：</label>
+                                <input type="text" name="fName"/>
+                            </li>
+                            <li>
+                                <label>电话：</label>
+                                <input type="text" name="fTel"/>
+                            </li>
+                            <li>
+                                <label>入职日期：</label>
+                                <input type="text" class="time-input" placeholder="请选择入职日期" name="fEntryDate"/>
+                            </li>
+                            <li>
+                                <label>简历来源：</label>
+                                <select name="fSource" th:with="type=${@dict.getType('resume_from')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:if="${!#strings.equals('1', dict.remark)}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="qrcode()" shiro:hasPermission="italent:register:add" title="应聘登记二维码">
+                    <i class="fa fa-qrcode"></i> 应聘登记
+                </a>
+               <!-- <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="italent:register:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>-->
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="italent:register:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="italent:register:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="italent:register:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('italent:register:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('italent:register:remove')}]];
+        var fSourceDatas = [[${@dict.getType('resume_from')}]];
+        var fSexDatas = [[${@dict.getType('sys_user_sex')}]];
+        var prefix = ctx + "italent/register";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "应聘登记",
+                detailView: true,
+                onExpandRow : function(index, row, $detail) {
+                    initChildTable(index, row, $detail);
+                },
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'fId',
+                    title: '主键',
+                    visible: false
+                },
+                {
+                    field: 'fJobname',
+                    title: '应聘职位',
+                },
+                {
+                    field: 'fHopeSalary',
+                    title: '期望薪资',
+                    visible: false
+                },
+                {
+                    field: 'fEntryDate',
+                    title: '入职日期'
+                },
+                {
+                    field: 'fIdcard',
+                    title: '身份证号'
+                },
+                {
+                    field: 'fName',
+                    title: '姓名'
+                },
+                {
+                    field: 'fSex',
+                    title: '性别',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(fSexDatas, value);
+                    }
+                },
+                {
+                    field: 'fBirthday',
+                    title: '出生日期',
+                    visible: false
+                },
+                {
+                    field: 'fTel',
+                    title: '电话'
+                },
+                {
+                    field: 'fNation',
+                    title: '民族'
+                },
+                {
+                    field: 'fMarry',
+                    title: '婚姻状况'
+                },
+                {
+                    field: 'fHobby',
+                    title: '爱好',
+                    visible: false
+                },
+                {
+                    field: 'fMail',
+                    title: '邮箱',
+                    visible: false
+                },
+                {
+                    field: 'fPoliticalStatus',
+                    title: '政治面貌'
+                },
+                {
+                    field: 'fResidenceAddress',
+                    title: '户籍地址',
+                    visible: false
+                },
+                {
+                    field: 'fNowAddress',
+                    title: '现住址',
+                    visible: false
+                },
+                {
+                    field: 'fSource',
+                    title: '简历来源',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(fSourceDatas, value);
+                    }
+                },
+                {
+                    field: 'fHr',
+                    title: 'HR专员'
+                },
+                {
+                    field: 'fRemark',
+                    title: '备注'
+                },
+                {
+                    field: 'fCreateby',
+                    title: '创建者',
+                    visible: false
+                },
+                {
+                    field: 'fCreatetime',
+                    title: '登记时间'
+                },
+                {
+                    field: 'fUpdateby',
+                    title: '更新者',
+                    visible: false
+                },
+                {
+                    field: 'fUpdatetime',
+                    title: '更新时间',
+                    visible: false
+                },
+                {
+                    title: '操作',
+                    halign: 'center',
+                    align: 'right',
+                    width: 200,
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-info btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="view(\'' + row.fId + '\')"><i class="fa fa-download"></i> 下载</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.fId + '\')"><i class="fa fa-edit"></i> 编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.fId + '\')"><i class="fa fa-remove"></i> 删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        /* 家庭背景 */
+        function editFamily(id){
+            $.modal.open("修改家庭背景", ctx + "italent/family/edit/" + id);
+        }
+
+        function removeFamily(id){
+            $.modal.confirm("是否要删除该家庭背景？", function(){
+                $.modal.open("修改家庭背景", ctx + "italent/family/remove/" + id);
+            })
+        }
+
+        /* 教育经历 */
+        function editEdu(id){
+            $.modal.open("修改教育经历", ctx + "italent/edu/edit/" + id);
+        }
+
+        function removeEdu(id){
+            $.modal.confirm("是否要删除该教育经历？", function(){
+                $.modal.open("修改教育经历", ctx + "italent/edu/remove/" + id);
+            })
+        }
+
+        /* 培训经历 */
+        function editDrill(id){
+            $.modal.open("修改培训经历", ctx + "italent/drill/edit/" + id);
+        }
+
+        function removeDrill(id){
+            $.modal.confirm("是否要删除该培训经历？", function(){
+                $.modal.open("修改培训经历", ctx + "italent/drill/remove/" + id);
+            })
+        }
+
+        /* 培训经历 */
+        function editWork(id){
+            $.modal.open("修改培训经历", ctx + "italent/work/edit/" + id);
+        }
+
+        function removeWork(id){
+            $.modal.confirm("是否要删除该培训经历？", function(){
+                $.modal.open("修改培训经历", ctx + "italent/work/remove/" + id);
+            })
+        }
+
+        initChildTable = function(index, row, $detail) {
+            var child = $detail.html(
+                '<table style="table-layout:fixed" id="st1"></table><br>' +
+                '<table style="table-layout:fixed" id="st2"></table><br>' +
+                '<table style="table-layout:fixed" id="st3"></table><br>' +
+                '<table style="table-layout:fixed" id="st4"></table>'
+            );
+
+            $(child).find("#st1").bootstrapTable({
+                url: ctx + "italent/family/list",
+                method: 'post',
+                sidePagination: "server",
+                contentType: "application/x-www-form-urlencoded",
+                queryParams : {
+                    fResumeId: row.fId
+                },
+                columns: [
+                    [
+                        {
+                            title : '家庭背景',
+                            align : 'center',
+                            colspan : 7
+                        }
+                    ],
+                    [
+                        {
+                            field : 'fName',
+                            title : '姓名'
+                        },
+                        {
+                            field : 'fRelation',
+                            title : '关系'
+                        },
+                        {
+                            field : 'fAge',
+                            title : '年龄'
+                        },
+                        {
+                            field : 'fCompany',
+                            title : '工作单位'
+                        },
+                        {
+                            field : 'fPost',
+                            title : '职位'
+                        },
+                        {
+                            field : 'fTel',
+                            title : '电话'
+                        },
+                        {
+                        title: '操作',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            var actions = [];
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="editFamily(\'' + row.fId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="removeFamily(\'' + row.fId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                            return actions.join('');
+                        }
+                    }]
+                ]
+            });
+
+            $(child).find("#st2").bootstrapTable({
+                url: ctx + "italent/edu/list",
+                method: 'post',
+                sidePagination: "server",
+                contentType: "application/x-www-form-urlencoded",
+                queryParams : {
+                    fResumeId: row.fId
+                },
+                columns: [
+                    [
+                        {
+                            title : '教育经历',
+                            align : 'center',
+                            colspan : 8
+                        }
+                    ],
+                    [
+                        {
+                            field : 'fStartTime',
+                            title : '开始时间'
+                        },
+                        {
+                            field : 'fEndTime',
+                            title : '毕业时间'
+                        },
+                        {
+                            field : 'fSchool',
+                            title : '院校'
+                        },
+                        {
+                            field : 'fMajor',
+                            title : '专业'
+                        },
+                        {
+                            field : 'fEduDegree',
+                            title : '学历'
+                        },
+                        {
+                            field : 'fEduBackground',
+                            title : '类型'
+                        },
+                        {
+                            field : 'fType',
+                            title : '入学方式'
+                        },
+                        {
+                            title: '操作',
+                            align: 'center',
+                            formatter: function(value, row, index) {
+                                var actions = [];
+                                actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="editEdu(\'' + row.fId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                                actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="removeEdu(\'' + row.fId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                                return actions.join('');
+                            }
+                        }
+                    ]
+                ]
+
+            });
+
+            $(child).find("#st3").bootstrapTable({
+                url: ctx + "italent/drill/list",
+                method: 'post',
+                sidePagination: "server",
+                contentType: "application/x-www-form-urlencoded",
+                queryParams : {
+                    fResumeId: row.fId
+                },
+                columns: [
+                    [
+                        {
+                            title : '培训经历',
+                            align : 'center',
+                            colspan : 7
+                        }
+                    ],
+                    [
+                        {
+                            field : 'fStartTime',
+                            title : '开始时间'
+                        },
+                        {
+                            field : 'fEndTime',
+                            title : '毕业时间'
+                        },
+                        {
+                            field : 'fCompany',
+                            title : '机构'
+                        },
+                        {
+                            field : 'fContent',
+                            title : '培训内容'
+                        },
+                        {
+                            field : 'fCertificate',
+                            title : '证书'
+                        },
+                        {
+                            field : 'fRemark',
+                            title : '备注'
+                        },
+                        {
+                            title: '操作',
+                            align: 'center',
+                            formatter: function(value, row, index) {
+                                var actions = [];
+                                actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="editDrill(\'' + row.fId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                                actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="removeDrill(\'' + row.fId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                                return actions.join('');
+                            }
+                        }]
+                ]
+
+            });
+
+            $(child).find("#st4").bootstrapTable({
+                url: ctx + "italent/work/list",
+                method: 'post',
+                sidePagination: "server",
+                contentType: "application/x-www-form-urlencoded",
+                queryParams : {
+                    fResumeId: row.fId
+                },
+                columns: [
+                    [
+                        {
+                            title : '工作经历',
+                            align : 'center',
+                            colspan : 9
+                        }
+                    ],
+                    [
+                        {
+                            field : 'fStartTime',
+                            title : '开始时间'
+                        },
+                        {
+                            field : 'fEndTime',
+                            title : '毕业时间'
+                        },
+                        {
+                            field : 'fCompany',
+                            title : '工作单位'
+                        },
+                        {
+                            field : 'fPost',
+                            title : '职位'
+                        },
+                        {
+                            field : 'fSalary',
+                            title : '薪资'
+                        },
+                        {
+                            field : 'fLeave',
+                            title : '离职原因'
+                        },
+                        {
+                            field : 'fTel',
+                            title : '单位电话'
+                        },
+                        {
+                            field : 'fWitness',
+                            title : '证明人'
+                        },
+                        {
+                            title: '操作',
+                            align: 'center',
+                            formatter: function(value, row, index) {
+                                var actions = [];
+                                actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="editWork(\'' + row.fId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                                actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="removeWork(\'' + row.fId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                                return actions.join('');
+                            }
+                        }]
+                ]
+
+            });
+        };
+
+        /**
+         * 打开二维码的模态框
+         */
+        function qrcode(){
+            $.modal.open("应聘登记", prefix + '/addQr/');
+        }
+
+        /**
+         * 打开二维码的模态框
+         */
+        function view(id){
+            $.ajax({
+                url: prefix + '/view?fId=' + id,
+                dataType: 'json',
+                success: function(data){
+                    console.log(data)
+                    if(data.code == 500){
+                        $.modal.alertError(data.msg);
+                        return;
+                    }
+                    if(data.code == 0){
+                        location.href = data.msg;
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
